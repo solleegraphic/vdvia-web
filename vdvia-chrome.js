@@ -1,4 +1,4 @@
-/* VDVIA 헤더·푸터 웹 컴포넌트 <vdvia-header> <vdvia-footer>  (2026-11-04)
+/* VDVIA 헤더, 푸터 웹 컴포넌트 <vdvia-header> <vdvia-footer>  (2026-11-04)
  * 정본: Figma [VDVIA] Design › 'VDVIA Home 1440 (PC)_sol 수정_1'(1173:966) 의 Header 1173:968 + Footer 1173:1089 (락업 = 1194:2 흰색 SVG).
  *       모바일(≤1280)은 ../_build/figma_home_build.js 의 header()/footerMob() 390 스펙.
  * 링크 규칙(Sol 2026-11-04): 로고 = Company = 홈(/). 나머지는 vdvia.com 기존 페이지 주소.
@@ -28,7 +28,7 @@
     ]
   };
 
-  var FONT_LINKS = [ // 헤더·푸터는 Pretendard만 쓴다(세리프 없음, 락업은 SVG). 가라몬드 kit은 홈 컴포넌트가 따로 넣는다.
+  var FONT_LINKS = [ // 헤더, 푸터는 Pretendard만 쓴다(세리프 없음, 락업은 SVG). 가라몬드 kit은 홈 컴포넌트가 따로 넣는다.
     ['vdvia-font-pretendard', 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css']
   ];
 
@@ -141,7 +141,7 @@
     '.f-priv{display:block;margin-top:10px;font-size:13px;line-height:22px;color:#fff}',
     '.fam{position:relative;margin-top:40px;width:180px}',
     '.sel{display:flex;align-items:center;justify-content:space-between;width:180px;height:40px;padding:8px 12px;border:1px solid #3a3a3a;color:#fff;font-size:14px;line-height:24px}',
-    '.sel .chev{flex:none;transition:transform .15s}.fam.open .sel .chev{transform:rotate(180deg)}',
+    '.sel .chev{flex:none;transition:transform .15s;transform-origin:50% 50%;transform-box:fill-box}.fam.open .sel .chev{transform:rotate(180deg)}',
     '.fam-list{display:none;position:absolute;left:0;top:40px;width:180px;background:#000;border:1px solid #3a3a3a;border-top:0;z-index:5}.fam.open .fam-list{display:block}',
     '.fam-list a{display:block;padding:8px 12px;font-size:14px;line-height:24px;color:#ccc}.fam-list a:hover{color:#fff;background:#141414}',
     '.lockup{display:block;width:100%;max-width:592px;margin:60px auto 0;color:#fff}.lockup svg{display:block;width:100%;height:auto}',
