@@ -1,220 +1,103 @@
-/* VDVIA 홈 웹 컴포넌트 <vdvia-home>
- * 정본: ../_build/figma_home_build.js (T_KR, SPECS, TSd/TSm, Gd/Gm, LH, 홈 레이아웃 함수). 숫자는 전부 거기서 가져왔다.
- * 빌드 도구 없음, 바닐라 ES2017, 외부 의존성은 폰트뿐 (Pretendard Variable, EB Garamond = Adobe Garamond Pro 대체).
- * 1281px 이상 = 컨테이너 1184 가운데(데스크톱 *Desk), 1280px 이하 = 좌우 24 단일 컬럼(모바일 *Mob).
+/* VDVIA Home 웹 컴포넌트 <vdvia-home>  (2026-11-05 새로 작성, 이전 예전 빌드 기준 코드를 대체)
+ * 정본: Figma [VDVIA] Design › 'VDVIA Home 1440 (PC)_sol 수정_3' (섹션 1209:2275, 보드 1209:2276). 문구는 피그마에서 노드 아이디로 자동 추출.
+ * 1440 기준 헤더(64) 아래 5039: 히어로 550 | About 932 | 53 | Mission 274 | 280 | Vision 258 | 280 | Core Value 988 | 280 | Structure 964 | 180
+ * 사진 4장(about, healthcare, lifestyle, creativity)은 피그마에서 필터와 크롭을 적용한 채 2배로 내보낸 JPG. 기본 주소 IMG_BASE, 속성 img-base로 바꿀 수 있다.
+ * 1281 이상: 컨테이너 1184 가운데. 769~1280: 같은 배치를 좌우 24 여백으로, 큰 세리프는 폭에 비례해 줄인다(fl()).
+ * 768 이하(윅스 모바일 320 포함): 한 줄씩 쌓는 모바일 배치. 피그마에 모바일 보드가 없어 Claude가 예전 하위 페이지 모바일 규칙을 따라 정한 값.
+ * 피그마와 브라우저의 글자 세로 위치 차이는 position:relative top으로 보정한다(배치에는 영향 없음). 값은 피그마 PNG와 픽셀 대조로 정했다.
+ * 윅스: Custom Element, Server URL = 이 파일, Tag = vdvia-home, 전체 폭.
  */
 (function () {
   'use strict';
-
-  var T = {
-    nav: ['Company', 'Brand', 'What is Different', 'Contact'],
-    hero: { lead: '우리가 추구하는 가치를 향해\n나아가는 길.', small: 'Leading Innovation Across Products,\nServices and Experiences.', display: ['Global D2C', 'Innovator'] },
-    mission: { caption: ['Mission', 'VDVIA'], display: 'Mission', lead: '과학과 데이터 기반, 고효능 저자극 헬스 & 뷰티 솔루션으로 전 세계의 삶의 질을 높인다.', body: 'We improve quality of life worldwide with science-backed, high-efficacy, low-irritation health & beauty solutions.' },
-    vision: { label: 'Vision', display: 'Research-\nto-\nRetail', lead: '차세대 바이오메디컬 기술과 AI로 Research-to-Retail 밸류체인을 혁신하는, 가장 신뢰받는 글로벌 헬스 & 뷰티 브랜드 그룹이 된다.', body: 'To become the most trusted global health & beauty brand group, transforming the end-to-end research-to-retail value chain with next-generation biomedical technologies and AI.' },
-    values: { label: 'Core Value', display: 'Value-\nDriven', body: 'VDVIA = Value-Driven, VIA.\nVIA는 길, 경로를 뜻합니다.', cells: [
-      ['Scientific Integrity | 과학적 정직성', '재현 가능한 근거와 투명한 검증을 최우선으로.', 'Evidence that’s reproducible, verification that’s transparent.'],
-      ['Accessibility | 접근성', '좋은 것을 더 많은 사람에게, 합리적인 방식으로.', 'Making the best accessible—fairly and widely.'],
-      ['Innovation with AI | AI 혁신', 'AI로 빠르게 실험하고 정확히 개선합니다.', 'Rapid experimentation, precise improvement—powered by AI.'],
-      ['Collaboration | 협업', '열린 파트너십으로 더 큰 가치를 만듭니다.', 'Open partnerships that compound value.'],
-      ['Sustainability | 지속가능성', '환경과 사회적 책임을 이익과 함께 설계합니다.', 'Designing profit with environmental and social responsibility.'],
-      ['Customer-Centricity | 고객 중심', '고객 여정의 매 순간을 데이터로 더 좋게.', 'Improving every moment of the customer journey with data.'] ] },
-    structure: { label: 'Structure', display: 'Healthcare.\nLifestyle.\nCreativity.', body: 'VDVIA는 Healthcare, Lifestyle, Creativity\n세 축으로 구성됩니다.', cells: [
-      ['Healthcare', 'VDVIA HEALTHCARE는 온오프라인 헬스 & 웰니스 브랜드와 서비스의 그룹입니다. R&D, 제조, 마케팅을 아우르는 수직 통합 풀컨트롤 비즈니스 모델로 운영됩니다.', 'VDVIA HEALTHCARE is group of on/offline Health & Wellness brands and services. This business is driven by vertically-integrated full-control business model with R&D manufacturing and marketing.'],
-      ['Lifestyle', 'VDVIA LIFESTYLE은 온라인 뷰티 라이프스타일 브랜드, 구독 서비스, 제조 역량을 바탕으로 상호 보완적인 제품과 서비스 네트워크를 제공합니다.', 'VDVIA LIFESTYLE is leading online beauty lifestyle brands, subscription services and manufacturing capabilities to provide a complementary network of product and service offerings.'],
-      ['Creativity', 'VDVIA CREATIVITY는 인하우스 브랜드 빌딩과 콘텐츠 제작을 담당하며, 최고 수준의 마케팅 인프라, K-콘텐츠 제작, 브랜드를 위한 엔드투엔드 이커머스 솔루션을 제공합니다.', 'VDVIA CREATIVITY provides in house brand building and content creation, delivered through a best-in-class marketing infrastructure instant access with K-contents creations and end-to-end ecommerce solutions for brands.'] ] },
-    footer: { copy: '© 2026 VDVIA', info: ['회사명 : 주식회사 비디비아', '대표이사 : 이승환', '본사주소 : 서울특별시 강남구 압구정로28길 18, 5층', '사업자등록번호 : 331-86-01800'], privacy: '개인정보처리방침', family: 'Family Site', tagline: 'a ZISHEL company',
-      cols: [['Company', ['Mission', 'Vision', 'Core Value', 'Structure']], ['Brand', ['Lemonderma', 'ZISHEL XOMAGE COSMETICS']], ['What is Different', []], ['Contact', []]] }
-  };
-
-  var WM_PATHS = '<path fill-rule="nonzero" d="M 196.84375 284.214844 L 188.394531 300.722656 L 149.699219 376.652344 L 111.007812 300.722656 L 102.554688 284.214844 L 121.042969 284.214844 L 129.496094 300.722656 L 149.699219 340.335938 L 169.90625 300.722656 L 178.355469 284.214844 Z M 196.84375 284.214844 "/><path fill-rule="nonzero" d="M 247.691406 360.277344 L 277.402344 360.277344 C 293.777344 360.277344 307.117188 346.941406 307.117188 330.566406 C 307.117188 314.191406 293.777344 300.851562 277.402344 300.851562 L 247.691406 300.851562 Z M 277.402344 284.34375 C 302.890625 284.34375 323.625 304.945312 323.625 330.433594 C 323.625 341.789062 319.53125 352.222656 312.664062 360.277344 C 311.871094 361.203125 310.945312 362.128906 310.023438 363.050781 C 301.703125 371.503906 290.210938 376.652344 277.535156 376.652344 L 231.316406 376.652344 L 231.316406 284.214844 Z M 277.402344 284.34375 "/><path fill-rule="nonzero" d="M 457.945312 284.214844 L 449.496094 300.722656 L 410.800781 376.652344 L 372.109375 300.722656 L 363.65625 284.214844 L 382.144531 284.214844 L 390.597656 300.722656 L 410.800781 340.335938 L 431.007812 300.722656 L 439.460938 284.214844 Z M 457.945312 284.214844 "/><path fill-rule="nonzero" d="M 492.417969 284.214844 L 508.925781 284.214844 L 508.925781 376.652344 L 492.417969 376.652344 Z M 492.417969 284.214844 "/><path fill-rule="nonzero" d="M 637.679688 376.652344 L 619.191406 376.652344 L 610.742188 360.148438 L 590.535156 320.527344 L 570.332031 360.148438 L 561.878906 376.652344 L 543.390625 376.652344 L 551.84375 360.148438 L 590.535156 284.214844 L 629.230469 360.148438 Z M 637.679688 376.652344 "/>';
-  var SERIF = "'adobe-garamond-pro','Adobe Garamond Pro','EB Garamond',Garamond,serif"; // Adobe Fonts 웹 프로젝트(Sol 2026-11-04, kit cle2qyf) → 설치 PC 폰트 → 대체
+  var SERIF = "'adobe-garamond-pro','Adobe Garamond Pro','EB Garamond',Garamond,serif";
+  var SANS = '"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,sans-serif';
+  var HELV = 'Helvetica,"Helvetica Neue",Arial,sans-serif'; /* 피그마에서 Helvetica Regular로 지정된 본문 3곳(About 오른쪽, Mission, Vision) */
+  var IMG_BASE = 'https://solleegraphic.github.io/vdvia-web/img/';
   var FONT_LINKS = [
     ['vdvia-font-pretendard', 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css'],
-    ['vdvia-font-garamond', 'https://use.typekit.net/cle2qyf.css'] // Adobe Garamond Pro (adobe-garamond-pro 400/600/700, 사용은 400만)
+    ['vdvia-font-garamond', 'https://use.typekit.net/cle2qyf.css']
   ];
-  var REF_CAP = 0.2465; // goodai 블록(Pretendard Bold 120%)에서 대문자 윗선/기준선이 블록 위/아래 끝에서 떨어진 거리 (1.2em 줄 중앙 정렬, 대문자 0.707em)
-
-  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function br(s) { return esc(s).replace(/\n/g, '<br>'); }
-  function wm(cls) { return '<svg class="' + cls + '" xmlns="http://www.w3.org/2000/svg" viewBox="102.555 284.215 535.125 92.438" fill="currentColor" role="img" aria-label="VDVIA">' + WM_PATHS + '</svg>'; }
-  var CHEV = '<svg class="chev" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true"><path d="M0.4 0.4 L5 5 L9.6 0.4"/></svg>';
-
-  // ---------- SEO 평문 ----------
-  function buildSeo() {
-    var h = '<h1>' + esc(T.hero.display.join(' ')) + '</h1><p>' + esc(T.hero.lead.replace(/\n/g, ' ')) + '</p><p>' + esc(T.hero.small.replace(/\n/g, ' ')) + '</p>';
-    h += '<nav><ul>' + T.nav.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></nav>';
-    h += '<h2>' + esc(T.mission.display) + '</h2><p>' + esc(T.mission.lead) + '</p><p>' + esc(T.mission.body) + '</p>';
-    h += '<h2>' + esc(T.vision.label) + ': ' + esc(T.vision.display.replace(/\n/g, '')) + '</h2><p>' + esc(T.vision.lead) + '</p><p>' + esc(T.vision.body) + '</p>';
-    h += '<h2>' + esc(T.values.label) + ': ' + esc(T.values.display.replace(/\n/g, '')) + '</h2><p>' + esc(T.values.body.replace(/\n/g, ' ')) + '</p><ul>' +
-      T.values.cells.map(function (c) { return '<li><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p><p>' + esc(c[2]) + '</p></li>'; }).join('') + '</ul>';
-    h += '<h2>' + esc(T.structure.label) + ': ' + esc(T.structure.display.replace(/\n/g, ' ')) + '</h2><p>' + esc(T.structure.body.replace(/\n/g, ' ')) + '</p><ul>' +
-      T.structure.cells.map(function (c) { return '<li><h3>' + esc(c[0]) + '</h3><p>' + esc(c[1]) + '</p><p>' + esc(c[2]) + '</p></li>'; }).join('') + '</ul>';
-    var f = T.footer;
-    h += '<footer><p>' + esc(f.copy) + '</p>' + f.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('') + '<p>' + esc(f.privacy) + '</p><ul>' +
-      f.cols.map(function (c) { return '<li>' + esc(c[0]) + (c[1].length ? '<ul>' + c[1].map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') + '</li>'; }).join('') +
-      '</ul><p>VDVIA ' + esc(f.tagline) + '</p></footer>';
-    return h;
+  var DATA = {
+  "heroLead": "The way science reaches\neveryday life.",
+  "heroTitle": [
+    "How Brands Connect with Consumers Worldwide",
+    "Global D2C Innovator"
+  ],
+  "about": {
+    "caption": "About / VDVIA",
+    "under": "From planning and development to production management and global distribution, we lead the entire journey ourselves, steadily expanding our presence worldwide.",
+    "head": "Designed by science.\nProven by data.\nDelivered to the world.",
+    "body": "VDVIA combines our group’s biotechnology with advanced AI to create the right answer for every market, faster and more precisely."
+  },
+  "mission": {
+    "label": "Mission",
+    "display": "Quality \u2028of Life",
+    "lead": "Better everyday life, backed by science.",
+    "body": "Our mission is to improve quality of life worldwide with science-backed, high-efficacy, low-irritation health & beauty solutions. Every product starts from research and data, so what is proven in the lab works just as well in daily routines."
+  },
+  "vision": {
+    "label": "Vision",
+    "display": "Research\nto Retail",
+    "lead": "The most trusted health & beauty brand group.",
+    "body": "Our vision is to transform the entire research-to-retail value chain with next-generation biomedical technology and AI. From Zishel’s laboratory research to the brands in our customers’ hands, we design the whole journey."
+  },
+  "core": {
+    "label": "Core Value",
+    "display": "Value\nDriven",
+    "body": "VDVIA = Value-Driven, VIA.\nVIA means the way, the path.",
+    "cells": [
+      [
+        "Scientific Integrity",
+        "Evidence that’s reproducible, verification that’s transparent."
+      ],
+      [
+        "Accessibility",
+        "Making the best accessible, fairly and widely."
+      ],
+      [
+        "Innovation with AI",
+        "Rapid experimentation, precise improvement, powered by AI."
+      ],
+      [
+        "Collaboration",
+        "Open partnerships that compound value."
+      ],
+      [
+        "Sustainability",
+        "Designing profit with environmental and social responsibility."
+      ],
+      [
+        "Customer-Centricity",
+        "Improving every moment of the customer journey with data."
+      ]
+    ]
+  },
+  "structure": {
+    "label": "Structure",
+    "display": "Healthcare,\nLifestyle,\nCreativity",
+    "body": "VDVIA is built on three pillars:\nHealthcare, Lifestyle and Creativity.",
+    "cells": [
+      [
+        "Healthcare",
+        "VDVIA HEALTHCARE builds online and offline wellness brands and services, operating on a vertically integrated model that spans R&D, manufacturing, marketing and distribution.",
+        "healthcare.jpg"
+      ],
+      [
+        "Lifestyle",
+        "VDVIA LIFESTYLE creates beauty brands grounded in exosome science. Through Lemonderma and ZISHEL XOMAGE COSMETICS, we bring clinic-proven technology into everyday skincare for consumers worldwide.",
+        "lifestyle.jpg"
+      ],
+      [
+        "Creativity",
+        "VDVIA CREATIVITY provides in-house brand building and content creation, backed by best-in-class marketing infrastructure, instant access to K-content production and end-to-end e-commerce solutions for brands.",
+        "creativity.jpg"
+      ]
+    ]
   }
-  if (typeof window !== 'undefined') window.VDVIA_HOME_SEO_HTML = buildSeo();
+};
 
-  // ---------- CSS ----------
-  var CSS = [
-':host{display:block;background:#fff;color:#141414;font-family:"Pretendard Variable",Pretendard,sans-serif;font-size:16px;letter-spacing:-0.16px;overflow-x:hidden;--ink:#141414;--sub:#555555;--ph:#e9e9e9;--htm-d:.146;--htm-m:.126;--hbm-d:.2;--hbm-m:.18}',
-'*{box-sizing:border-box;margin:0;padding:0}',
-'a{color:inherit;text-decoration:none}ul{list-style:none}button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:0;cursor:pointer;text-align:left}',
-'.page{background:#fff}',
-'.serif{font-family:' + SERIF + ';font-weight:400}',
-'.in{padding:0 24px}',
-'.sec{margin-top:120px}',
-/* header */
-'.hd{height:64px;background:#fff}',
-'.hd .in{height:64px;display:flex;align-items:center;justify-content:space-between;position:relative}',
-'.logo{display:block;width:96px;height:auto;aspect-ratio:535.125/92.438;color:#141414;flex:none}',
-'.nav{display:none}',
-'.menu{width:22px;height:11px;position:relative;flex:none}.menu i{position:absolute;left:0;width:22px;height:1.5px;background:#141414}.menu i+i{top:9.5px}',
-/* hero */
-'.hero{padding-top:60px}',
-'.hero-top{display:flex;flex-direction:column}',
-'.hlead{width:240px;max-width:100%;font-size:20px;line-height:30px;font-weight:600}',
-'.hsmall{width:60%;margin-left:auto;font-size:16px;line-height:26px}',
-'.hdisp{display:flow-root;margin-top:36px;font-weight:400}',
-'.hl{display:block;width:max-content;white-space:nowrap;font-family:' + SERIF + ';font-weight:400;font-size:90px;line-height:.84;letter-spacing:-.02em;--htm:var(--htm-m);--hbm:var(--hbm-m)}',
-'.hl:first-child{margin-top:calc(var(--htm) * 1em)}',
-'.hl:last-child{margin-bottom:calc(var(--hbm) * 1em + 8px)}',
-/* rule + image */
-'.rule{height:1px;background:var(--ink)}',
-'.img{background-color:var(--ph);background-image:var(--img,none);background-size:cover;background-position:center;background-repeat:no-repeat}',
-/* mission */
-'.m-body{margin-top:36px}',
-'.m-img{width:100%;aspect-ratio:1/1.413;background-image:var(--img-mission,none)}',
-'.m-cap{margin-top:10px;font-size:13px;line-height:18px}.m-cap span{display:block}.m-cap .sep{display:none}',
-'.m-col{margin-top:105px}',
-'.disp{display:block;width:max-content;white-space:nowrap;font-family:' + SERIF + ';font-weight:400;font-size:72px;line-height:.86;letter-spacing:-.01em}',
-'.lead{font-size:20px;line-height:30px;font-weight:600}',
-'.body{font-size:16px;line-height:26px}.body.sub,.serif.body{color:var(--sub)}',
-'.m-col .lead{margin-top:32px}.m-col .body{margin-top:50px}',
-/* label rows */
-'.lab{font-size:16px;line-height:26px;font-weight:700;margin-bottom:6px}',
-'.rules{display:grid;grid-template-columns:1fr;margin-bottom:21px}.rules i{display:block;height:1px;background:var(--ink)}.rules i:nth-child(n+2){display:none}',
-/* vision */
-'.v-c2{margin-top:32px}.v-c3{margin-top:48px}',
-/* grid head */
-'.gh{margin-bottom:98px}.gh-b{margin-top:48px;font-size:16px;line-height:26px}',
-/* cells */
-'.cells{display:grid;grid-template-columns:1fr}',
-'.cells::after{content:"";display:block;height:1px;background:var(--ink);grid-column:1/-1}',
-'.cell{position:relative;margin-top:1px}',
-'.cell::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:var(--ink)}',
-'.vcell{height:220px;display:flex;flex-direction:column;justify-content:space-between;padding:21px 4px;overflow:hidden}',
-'.cname{font-size:16px;line-height:25px;font-weight:500}',
-'.vkr{font-size:18px;line-height:28px;font-weight:600}.ven{margin-top:10px;font-size:14px;line-height:20px;color:var(--sub)}',
-'.scell{padding:21px 4px 24px}',
-'.simg{width:100%;aspect-ratio:8/5}',
-'.scell .cname{margin-top:20px}',
-'.skr{margin-top:10px;font-size:14px;line-height:22px}.sen{margin-top:8px;font-size:13px;line-height:20px;color:var(--sub)}',
-'.simg.s1{background-image:var(--img-healthcare,none)}.simg.s2{background-image:var(--img-lifestyle,none)}.simg.s3{background-image:var(--img-creativity,none)}',
-/* footer */
-'.ft{background:#000;color:#fff;margin-top:120px;padding:40px 0}',
-'.fc .fh{display:flex;justify-content:space-between;padding:16px 0;font-size:14px;line-height:20px;color:#fff;border-bottom:1px solid #2a2a2a}',
-'.fc ul{display:none}',
-'.f-copy{margin-top:40px;font-size:14px;line-height:24px}',
-'.f-info{margin-top:16px;font-size:13px;line-height:22px;color:#9d9d9d}',
-'.f-priv{display:block;margin-top:10px;font-size:13px;line-height:22px;color:#fff}',
-'.sel{display:flex;align-items:flex-start;justify-content:space-between;width:180px;height:40px;margin-top:40px;padding:8px 12px;border:1px solid #3a3a3a;color:#fff;font-size:14px;line-height:24px;position:relative}.sel .chev{position:absolute;right:12px;top:16px}',
-'.lockup{margin-top:60px;color:#fff}.lockup .logo{width:100%;color:#fff}',
-'.tg{display:block;text-align:center;line-height:1;font-family:' + SERIF + ';font-weight:400;letter-spacing:0;white-space:nowrap;font-size:20px;margin-top:14px}',
-/* ---------------- desktop ---------------- */
-'@media (min-width:1281px){',
-'.in{max-width:1184px;margin:0 auto;padding:0}',
-'.sec{margin-top:280px}',
-'.logo{width:110px}',
-'.nav{display:flex;gap:50px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;line-height:20px;font-weight:600;white-space:nowrap}',
-'.menu{display:none}',
-'.hero{padding-top:116px}',
-'.hero-top{flex-direction:row;justify-content:space-between;align-items:flex-start}',
-'.hlead{width:491px;font-size:23px;line-height:33px}',
-'.hsmall{width:261px;margin-left:0}',
-'.hdisp{margin-top:0}',
-'.hl{font-size:168px;line-height:.8;--htm:var(--htm-d);--hbm:var(--hbm-d)}',
-'.hl:last-child{margin-bottom:calc(var(--hbm) * 1em + 40px)}',
-'.m-body{margin-top:17px;position:relative;display:grid;grid-template-columns:528px 1fr 284px;align-items:start}',
-'.m-img{width:528px;height:746px;aspect-ratio:auto}',
-'.m-cap{position:absolute;left:544px;top:0;margin-top:0;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}.m-cap span{display:inline}.m-cap .sep{display:inline}',
-'.m-col{grid-column:3;margin-top:0;position:relative}',
-'.m-col::before{content:"";position:absolute;left:-14px;top:0;width:1px;height:100%;background:var(--ink)}',
-'.disp{font-size:90px}',
-'.lead{font-size:23px;line-height:33px}',
-'.m-col .lead{margin-top:32px}.m-col .body{margin-top:60px}',
-'.lab{margin-bottom:6px}',
-'.rules{grid-template-columns:repeat(3,1fr);column-gap:24px}.rules i:nth-child(n+2){display:block}',
-'.v-cols{display:grid;grid-template-columns:repeat(3,1fr);column-gap:24px;align-items:start}',
-'.vision .disp{line-height:.76}',
-'.v-c2{margin-top:10px}.v-c3{margin-top:10px}',
-'.gh{display:grid;grid-template-columns:804px 380px;justify-content:space-between;align-items:start;margin-bottom:236px}.gh-b{margin-top:10px}',
-'.cells{grid-template-columns:repeat(3,1fr)}',
-'.cell{margin-top:0}.cell::before{top:0}',
-'.cell:not(:nth-child(3n+1))::after{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--ink)}',
-'.vcell{height:280px;padding:21px 18px}',
-'.cname{font-size:15px;line-height:25px;font-weight:600}',
-'.scell{padding:21px 18px 24px}',
-'.ft{margin-top:180px;padding:0}',
-'.f-in{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:680px;padding-bottom:60px;box-sizing:border-box}',
-'.f-cols{position:absolute;left:342px;top:30px;display:flex;gap:24px}',
-'.fc{width:170px}.fc .fh{display:block;padding:0;border:0;font-size:14px;line-height:18px;color:#959595;margin-bottom:19px}.fc .sg{display:none}',
-'.fc ul{display:block}.fc li{font-size:14px;line-height:24px;color:#ccc}',
-'.f-left{position:absolute;left:0;top:0}',
-'.f-copy{margin-top:30px}',
-'.f-info{margin-top:15px;width:250px;font-size:14px;line-height:24px}',
-'.f-priv{margin-top:10px;font-size:14px;line-height:24px}',
-'.sel{position:absolute;left:0;top:279px;margin-top:0}',
-'.lockup{position:relative;width:100%;margin-top:343px}', /* Family Site 박스 하단 319 + 24, 락업이 크면 푸터가 680보다 늘어난다 (2026-11-04 겹침 수정) */
-'}'
-  ].join('\n');
-
-  // ---------- 마크업 ----------
-  function render() {
-    var s = '<div class="page">';
-    // header
-    s += '<header class="hd"><div class="in">' + wm('logo') + '<nav class="nav">' + T.nav.map(function (n) { return '<a href="#">' + esc(n) + '</a>'; }).join('') + '</nav><div class="menu" aria-label="Menu" role="button"><i></i><i></i></div></div></header>';
-    // hero
-    s += '<section class="hero"><div class="in"><div class="hero-top"><p class="hlead">' + br(T.hero.lead) + '</p><p class="hsmall">' + br(T.hero.small) + '</p></div>' +
-      '<h1 class="hdisp">' + T.hero.display.map(function (l) { return '<span class="hl" data-fit="168" data-fit-m="176,90" data-group="hero">' + esc(l) + '</span>'; }).join('') + '</h1></div></section>';
-    // mission
-    var m = T.mission;
-    s += '<section class="mission"><div class="in"><div class="rule"></div><div class="m-body"><div class="m-img img"></div>' +
-      '<p class="m-cap"><span>' + esc(m.caption[0]) + '</span><span class="sep"> / </span><span>' + esc(m.caption[1]) + '</span></p>' +
-      '<div class="m-col"><h2 class="disp" data-fit="90" data-fit-m="72">' + esc(m.display) + '</h2><p class="lead">' + esc(m.lead) + '</p><p class="body serif">' + esc(m.body) + '</p></div></div></div></section>';
-    // vision
-    var v = T.vision;
-    s += '<section class="vision sec"><div class="in"><div class="lab">' + esc(v.label) + '</div><div class="rules"><i></i><i></i><i></i></div>' +
-      '<div class="v-cols"><div class="v-c1"><h2 class="disp" data-fit="90" data-fit-m="72">' + br(v.display) + '</h2></div><p class="lead v-c2">' + esc(v.lead) + '</p><p class="body serif v-c3">' + esc(v.body) + '</p></div></div></section>';
-    // values
-    var a = T.values;
-    s += '<section class="values sec"><div class="in"><div class="lab">' + esc(a.label) + '</div><div class="rules"><i></i></div>' +
-      '<div class="gh"><div class="gh-l"><h2 class="disp" data-fit="90" data-fit-m="72">' + br(a.display) + '</h2></div><p class="gh-b">' + br(a.body) + '</p></div>' +
-      '<div class="cells">' + a.cells.map(function (c) {
-        return '<div class="cell vcell"><div class="cname">' + esc(c[0]) + '</div><div><p class="vkr">' + esc(c[1]) + '</p><p class="ven serif">' + esc(c[2]) + '</p></div></div>';
-      }).join('') + '</div></div></section>';
-    // structure
-    var b = T.structure;
-    s += '<section class="structure sec"><div class="in"><div class="lab">' + esc(b.label) + '</div><div class="rules"><i></i></div>' +
-      '<div class="gh"><div class="gh-l"><h2 class="disp" data-fit="90" data-fit-m="72">' + br(b.display) + '</h2></div><p class="gh-b">' + br(b.body) + '</p></div>' +
-      '<div class="cells">' + b.cells.map(function (c, i) {
-        return '<div class="cell scell"><div class="simg img s' + (i + 1) + '"></div><div class="cname">' + esc(c[0]) + '</div><p class="skr">' + esc(c[1]) + '</p><p class="sen serif">' + esc(c[2]) + '</p></div>';
-      }).join('') + '</div></div></section>';
-    // footer
-    var f = T.footer;
-    s += '<footer class="ft"><div class="in f-in"><div class="f-cols">' + f.cols.map(function (c) {
-      return '<div class="fc"><div class="fh"><span>' + esc(c[0]) + '</span><i class="sg">' + (c[1].length ? '+' : '↗') + '</i></div>' +
-        (c[1].length ? '<ul>' + c[1].map(function (n) { return '<li><a href="#">' + esc(n) + '</a></li>'; }).join('') + '</ul>' : '') + '</div>';
-    }).join('') + '</div>' +
-      '<div class="f-left"><p class="f-copy">' + esc(f.copy) + '</p><div class="f-info">' + f.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('') + '</div>' +
-      '<a class="f-priv" href="#">' + esc(f.privacy) + '</a><button class="sel" type="button" aria-haspopup="listbox"><span>' + esc(f.family) + '</span>' + CHEV + '</button></div>' +
-      '<div class="lockup">' + wm('logo') + '<span class="tg">' + esc(f.tagline) + '</span></div></div></footer>';
-    return s + '</div>';
-  }
-
-  // ---------- 컴포넌트 ----------
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function lines(s) { return esc(s).replace(/ ?(\u2028|\n)/g, '<br>'); }
   function injectFonts() {
     if (typeof document === 'undefined') return;
     FONT_LINKS.forEach(function (f) {
@@ -223,116 +106,141 @@
     });
   }
 
-  class VdviaHome extends HTMLElement {
-    static get observedAttributes() { return ['images']; }
-    constructor() {
-      super();
-      this._ready = false; this._raf = 0; this._lastW = -1;
-      this.attachShadow({ mode: 'open' });
-    }
-    connectedCallback() {
-      var self = this;
-      if (!this._ready) {
-        injectFonts();
-        this.shadowRoot.innerHTML = '<style>' + CSS + '</style>' + render();
-        this._ready = true;
-        this._applyImages();
-        this._onResize = function () { self._schedule(); };
-        window.addEventListener('resize', this._onResize);
-        if (typeof ResizeObserver !== 'undefined') {
-          this._ro = new ResizeObserver(function () { var w = self.clientWidth; if (w !== self._lastW) { self._lastW = w; self._schedule(); } });
-          this._ro.observe(this);
-        }
-        if (document.fonts) {
-          document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', function () { self._schedule(); });
-          document.fonts.load("400 100px 'EB Garamond'").catch(function () {});
-          document.fonts.load('600 20px "Pretendard Variable"').catch(function () {});
-          document.fonts.ready.then(function () { self._schedule(); });
-        }
-        FONT_LINKS.forEach(function (f) { var l = document.getElementById(f[0]); if (l) l.addEventListener('load', function () { self._schedule(); }); });
-      }
-      this._layout();
-    }
-    disconnectedCallback() {
-      if (this._onResize) window.removeEventListener('resize', this._onResize);
-      if (this._ro) this._ro.disconnect();
-      this._ready = false; this._ro = null;
-    }
-    attributeChangedCallback(name) { if (name === 'images' && this._ready) this._applyImages(); }
-    _applyImages() {
-      var raw = this.getAttribute('images'); if (!raw) return;
-      var o; try { o = JSON.parse(raw); } catch (e) { return; }
-      var self = this;
-      ['mission', 'healthcare', 'lifestyle', 'creativity'].forEach(function (k) {
-        var v = o && o[k]; if (!v) return;
-        self.style.setProperty('--img-' + k, /^\s*(url|linear-gradient|image-set)\(/.test(v) ? v : 'url("' + String(v).replace(/"/g, '%22') + '")');
-      });
-    }
-    _schedule() {
-      var self = this; clearTimeout(this._t);
-      this._t = setTimeout(function () { self._layout(); }, 60);
-    }
-    // 가라몬드 실제 폰트 메트릭으로 히어로 위아래 보정(em)을 계산
-    _calibrate() {
-      try {
-        var c = document.createElement('canvas').getContext('2d');
-        c.font = "400 1000px " + SERIF;
-        var mt = c.measureText('H'), asc = mt.fontBoundingBoxAscent, desc = mt.fontBoundingBoxDescent, cap = mt.actualBoundingBoxAscent;
-        if (!asc || !cap) return;
-        var top = function (lh) { return REF_CAP - ((lh * 1000 - (asc + desc)) / 2 + (asc - cap)) / 1000; };
-        var bot = function (lh) { return REF_CAP - (lh * 1000 - ((lh * 1000 - (asc + desc)) / 2 + asc)) / 1000; };
-        var st = this.style, r = function (n) { return String(Math.round(n * 10000) / 10000); };
-        st.setProperty('--htm-d', r(top(.8))); st.setProperty('--hbm-d', r(bot(.8)));
-        st.setProperty('--htm-m', r(top(.84))); st.setProperty('--hbm-m', r(bot(.84)));
-      } catch (e) {}
-    }
-    // fit(): 최대 크기로 시작해 부모 가용 폭을 넘으면 줄인다(최소 8px). 락업 태그라인은 워드마크 폭의 58%.
-    _layout() {
-      if (!this._ready) return;
-      var root = this.shadowRoot, desk = window.matchMedia('(min-width:1281px)').matches, vw = window.innerWidth;
-      this._calibrate();
-      var els = root.querySelectorAll('[data-fit]'), sizes = [], groups = {}, i;
-      for (i = 0; i < els.length; i++) {
-        var el = els[i], max;
-        if (desk) max = +el.getAttribute('data-fit');
-        else { var mm = el.getAttribute('data-fit-m').split(','); max = mm.length > 1 ? (vw >= 768 ? +mm[0] : +mm[1]) : +mm[0]; }
-        el.style.fontSize = max + 'px';
-        var p = el.parentElement, cs = getComputedStyle(p);
-        var avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-        var w = el.getBoundingClientRect().width, fs = max;
-        if (avail > 0 && w > avail) fs = Math.max(8, Math.floor(max * avail / w));
-        sizes.push(fs);
-        var g = el.getAttribute('data-group');
-        if (desk && g) groups[g] = Math.min(groups[g] || 1e9, fs);
-      }
-      for (i = 0; i < els.length; i++) {
-        var gg = els[i].getAttribute('data-group');
-        els[i].style.fontSize = ((desk && gg) ? groups[gg] : sizes[i]) + 'px';
-      }
-      var lk = root.querySelectorAll('.lockup');
-      for (i = 0; i < lk.length; i++) {
-        var L = lk[i], svg = L.querySelector('.logo'), tg = L.querySelector('.tg'), W = L.clientWidth;
-        if (!W) continue;
-        tg.style.fontSize = '100px'; tg.style.marginTop = '0';
-        var tw = tg.scrollWidth || tg.getBoundingClientRect().width;
-        // 인라인 span이 아닌 block이라 폭이 W로 늘어나므로 Range로 글자 폭을 잰다
-        var rg = document.createRange(); rg.selectNodeContents(tg); tw = rg.getBoundingClientRect().width;
-        var size = Math.max(6, Math.round(100 * (W * 0.58) / tw * 10) / 10);
-        tg.style.fontSize = size + 'px';
-        var wmH = svg.getBoundingClientRect().height;
-        tg.style.marginTop = Math.round(wmH * 0.22 - size * 0.2) + 'px';
-      }
-    }
+  var CSS = [
+    ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    '.in{max-width:1184px;margin:0 auto;position:relative}',
+    'img{display:block;width:100%;height:auto}',
+    '.serif{font-family:' + SERIF + ';font-weight:400}',
+    '.rule{height:1px;background:#141414}',
+    '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
+    '.t23{font-weight:600;font-size:23px;line-height:33px;position:relative;top:1px}',
+    '.t16{font-size:16px;line-height:26px;position:relative;top:2px}',
+    '.helv{font-family:' + HELV + ';color:#555;position:relative;top:var(--helv-dy,2px)}',
+    /* 히어로 550: 리드 위 116, 제목 위 367 (News와 같은 두 크기 제목 보정: 첫 줄 -2, 둘째 줄 +10) */
+    '.hero{height:550px}',
+    '.hero .in{height:100%}',
+    '.hlead{position:absolute;left:0;top:116px;width:491px;max-width:100%}',
+    '.ht{position:absolute;left:0;top:367px;font-weight:400}',
+    '.ht span{display:block;white-space:nowrap;letter-spacing:-0.02em}',
+    '.ht .l1{font-size:min(39.12px, calc((100vw - 48px) * 0.03304));line-height:min(39.12px, calc((100vw - 48px) * 0.03304));position:relative;top:-2px}',
+    '.ht .l2{font-size:min(94.04px, calc((100vw - 48px) * 0.07943));line-height:min(94.04px, calc((100vw - 48px) * 0.07943));position:relative;top:10px}',
+    /* About 932 */
+    '.about{min-height:932px}',
+    '.ab-grid{display:grid;grid-template-columns:minmax(0,612fr) minmax(0,274fr) minmax(0,14fr) minmax(0,284fr);margin-top:17px}',
+    '.ab-img img{aspect-ratio:612/390;object-fit:cover}',
+    '.ab-under{width:86.2745%;margin-top:14px;letter-spacing:0;position:relative;top:var(--under-dy,2px)}',
+    '.ab-cap{grid-column:2;justify-self:start;align-self:start;writing-mode:vertical-rl;font-size:13px;line-height:18px;margin-left:9px;position:relative;left:var(--cap-dx,-1px);top:var(--cap-dy,0px)}',
+    '.ab-vr{grid-column:3;width:1px;height:384px;background:#141414}',
+    '.ab-txt{grid-column:4}',
+    '.ab-head{font-weight:600;font-size:18px;line-height:26px;position:relative;top:var(--h18-dy,0px)}',
+    '.ab-body{margin-top:32px}',
+    '.gap53{height:53px}.gap280{height:280px}.gap180{height:180px}',
+    /* Mission 274, Vision 258: 라벨 → 룰 둘(378.67 | 24.33 | 782) → 디스플레이 82 / 리드 23 + 본문 */
+    '.mv .cols{display:grid;grid-template-columns:minmax(0,378.67fr) minmax(0,24.33fr) minmax(0,782fr)}',
+    '.mv .rules{margin-top:6px}',
+    '.mv .rules .rule:last-child{grid-column:3}',
+    '.mission{min-height:274px}.vision{min-height:258px}',
+    '.disp{font-size:min(82px, calc((100vw - 48px) * 0.06926));line-height:min(87px, calc((100vw - 48px) * 0.07348));letter-spacing:-0.01em;position:relative;top:var(--d82-dy,-4px)}',
+    '.mv .disp{margin-top:21px}',
+    '.mv .r{grid-column:3}',
+    '.mv .t23{margin-top:31px}',
+    '.mv .helv{margin-top:67px}',
+    /* Core Value 988: 라벨 → 룰 → 디스플레이(804) | 본문(380) → 216 → 칸 2열 3행(568 | 48 | 568, 행 간격 80) */
+    '.core{min-height:988px}',
+    '.head2{display:grid;grid-template-columns:minmax(0,804fr) minmax(0,380fr)}',
+    '.head2 .disp{margin-top:21px}',
+    '.head2 .t16{margin-top:31px}',
+    '.cells{display:grid;grid-template-columns:minmax(0,568fr) minmax(0,48fr) minmax(0,568fr);row-gap:80px;margin-top:216px}',
+    '.cell:nth-child(2n){grid-column:3}',
+    '.cname{font-size:min(68px, calc((100vw - 48px) * 0.05743));line-height:min(68px, calc((100vw - 48px) * 0.05743));letter-spacing:-0.01em;white-space:nowrap;position:relative;top:var(--d68-dy,-4px)}',
+    '.cell .rule{margin-top:13px}',
+    '.cell .t16{margin-top:20px}',
+    /* Structure 964: 라벨 → 룰 → 디스플레이 90 3줄 | 본문 → 182 → 칸 3개(394.67, 위아래 룰, 세로 룰 위아래 12 안쪽) */
+    '.st .disp90{font-size:min(90px, calc((100vw - 48px) * 0.07601));line-height:min(95px, calc((100vw - 48px) * 0.08024));letter-spacing:-0.01em;margin-top:21px;position:relative;top:var(--d90-dy,-5px)}',
+    '.scells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:182px;border-top:1px solid #141414;border-bottom:1px solid #141414;position:relative}',
+    '.scell{min-height:441px;padding:20px 18px 8px}',
+    '.scell + .scell{border-left:0}',
+    '.svr{position:absolute;top:12px;bottom:12px;width:1px;background:#141414}',
+    '.scell img{aspect-ratio:358.67/224;object-fit:cover}',
+    '.stitle{margin-top:20px;font-weight:600;font-size:15px;line-height:25px;position:relative;top:var(--t15-dy,1px)}',
+    '.sbody{margin-top:10px;font-size:14px;line-height:22px;position:relative;top:var(--t14-dy,1px)}',
+    /* 769~1280: 같은 배치, 좌우 24 */
+    '@media (max-width:1280px){.in{max-width:none;margin:0 24px}}',
+    /* 768 이하: 모바일 */
+    '@media (max-width:768px){',
+    '.hero{height:auto;padding:80px 0 60px}',
+    '.hlead,.ht{position:static;width:auto}',
+    '.ht{margin-top:120px}',
+    '.ht span{white-space:normal}',
+    '.ht .l1{font-size:17px;line-height:20px;top:0}',
+    '.ht .l2{font-size:44px;line-height:44px;top:0;margin-top:8px}',
+    '.hlead{font-size:20px;line-height:30px}',
+    '.about{min-height:0}',
+    '.ab-grid{display:flex;flex-direction:column;margin-top:16px}',
+    '.ab-cap{order:-1;writing-mode:horizontal-tb;margin:0 0 10px;left:0;top:0}',
+    '.ab-vr{display:none}',
+    '.ab-under{width:auto}',
+    '.ab-txt{margin-top:48px}',
+    '.ab-body{margin-top:24px}',
+    '.gap53,.gap280,.gap180{height:120px}',
+    '.mission,.vision,.core{min-height:0}',
+    '.mv .cols,.head2{display:block}',
+    '.mv .rules .rule:first-child{display:none}',
+    '.disp,.st .disp90{font-size:48px;line-height:51px;top:0}', /* 피그마처럼 줄 높이 정수 */
+    '.mv .t23,.head2 .t16{margin-top:32px}',
+    '.mv .t23{font-size:20px;line-height:30px}',
+    '.mv .helv{margin-top:24px}',
+    '.cells{display:block;margin-top:60px}',
+    '.cell + .cell{margin-top:48px}',
+    '.cname{font-size:36px;line-height:36px;white-space:normal;top:0}',
+    '.scells{display:block;margin-top:60px;border-bottom:0}',
+    '.svr{display:none}',
+    '.scell{min-height:0;padding:24px 0 32px;border-bottom:1px solid #141414}',
+    '}'
+  ].join('\n');
+
+  function html(D, base) {
+    var mv = function (cls, M) {
+      return '<section class="mv ' + cls + '"><div class="in"><p class="lab">' + esc(M.label) + '</p>' +
+        '<div class="cols rules"><div class="rule"></div><div class="rule"></div></div>' +
+        '<div class="cols"><h2 class="disp serif">' + lines(M.display) + '</h2><div class="r"><p class="t23">' + lines(M.lead) + '</p><p class="t16 helv">' + lines(M.body) + '</p></div></div></div></section>';
+    };
+    var C = D.core, S = D.structure, A = D.about;
+    return '<style>' + CSS + '</style>' +
+      '<section class="hero"><div class="in"><p class="hlead t23">' + lines(D.heroLead) + '</p>' +
+      '<h1 class="ht serif"><span class="l1">' + esc(D.heroTitle[0]) + '</span><span class="l2">' + esc(D.heroTitle[1]) + '</span></h1></div></section>' +
+      '<section class="about"><div class="in"><div class="rule"></div><div class="ab-grid">' +
+      '<div class="ab-left"><figure class="ab-img"><img src="' + esc(base + 'about.jpg') + '" width="612" height="390" alt="World map with network connections" loading="eager"></figure><p class="ab-under t16">' + lines(A.under) + '</p></div>' +
+      '<p class="ab-cap">' + esc(A.caption) + '</p><div class="ab-vr" role="presentation"></div>' +
+      '<div class="ab-txt"><p class="ab-head">' + lines(A.head) + '</p><p class="ab-body t16 helv">' + lines(A.body) + '</p></div></div></div></section>' +
+      '<div class="gap53" aria-hidden="true"></div>' + mv('mission', D.mission) + '<div class="gap280" aria-hidden="true"></div>' + mv('vision', D.vision) + '<div class="gap280" aria-hidden="true"></div>' +
+      '<section class="core"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<div class="head2"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
+      '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<div class="gap280" aria-hidden="true"></div>' +
+      '<section class="st"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<div class="head2"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
+      '<div class="scells" role="list"><i class="svr" style="left:33.3333%"></i><i class="svr" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<div class="gap180" aria-hidden="true"></div>';
   }
 
+  class VdviaHome extends HTMLElement {
+    static get observedAttributes() { return ['img-base']; }
+    constructor() { super(); this.attachShadow({ mode: 'open' }); }
+    connectedCallback() { injectFonts(); this._render(); }
+    attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
+    _render() { this.shadowRoot.innerHTML = html(DATA, this.getAttribute('img-base') || IMG_BASE); }
+  }
+
+  // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)
+  if (typeof window !== 'undefined') {
+    var p = function (s) { return '<p>' + esc(String(s).replace(/ ?(\u2028|\n)/g, ' ')) + '</p>'; };
+    var D = DATA;
+    window.VDVIA_HOME_SEO_HTML = '<h1>' + esc(D.heroTitle.join(' ')) + '</h1>' + p(D.heroLead) + p(D.about.head) + p(D.about.body) + p(D.about.under) +
+      [D.mission, D.vision].map(function (m) { return '<h2>' + esc(m.display.replace(/ ?(\u2028|\n)/g, ' ')) + '</h2>' + p(m.lead) + p(m.body); }).join('') +
+      '<h2>' + esc(D.core.display.replace(/\n/g, ' ')) + '</h2>' + p(D.core.body) + D.core.cells.map(function (c) { return '<h3>' + esc(c[0]) + '</h3>' + p(c[1]); }).join('') +
+      '<h2>' + esc(D.structure.display.replace(/\n/g, ' ')) + '</h2>' + p(D.structure.body) + D.structure.cells.map(function (c) { return '<h3>' + esc(c[0]) + '</h3>' + p(c[1]); }).join('');
+  }
   if (typeof customElements !== 'undefined' && !customElements.get('vdvia-home')) customElements.define('vdvia-home', VdviaHome);
 })();
-
-/* ---- 윅스에서 쓰는 법 ----
- * 1) 이 파일을 윅스 저장소(solleegraphic/VDVIA) src/public/custom-elements/vdvia-home.js 로 복사해 main에 푸시.
- * 2) 에디터: Add Elements > Embed > Popular Embeds > Custom Element > Choose Source > Velo file > vdvia-home.js, Tag Name = vdvia-home.
- * 3) SEO: 페이지 코드(src/pages/<페이지>.js)에서
- *      import { SEO_HTML } from 'public/vdvia-home-seo.js';   // 아래 SEO_HTML 문자열을 export 하는 모듈(이 파일의 window.VDVIA_HOME_SEO_HTML 값을 복사)
- *      $w.onReady(() => { $w('#customElement1').seoMarkup = SEO_HTML; });
- *    (브라우저에서 이 파일을 <script src>로 불러오면 window.VDVIA_HOME_SEO_HTML 에 같은 문자열이 담긴다. 페이지 코드는 Velo 서버/프런트 모듈 환경이라 window 가 없으므로 공개 폴더 모듈로 한 번 복사해 import 한다.)
- */

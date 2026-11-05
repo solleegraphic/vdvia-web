@@ -10,7 +10,8 @@ cp "$SRC/vdvia-chrome.js" ./vdvia-chrome.js
 cp "$SRC/chrome.html" ./chrome.html
 cp "$SRC/vdvia-news.js" ./vdvia-news.js
 cp "$SRC/news.html" ./news.html
-git add vdvia-home.js index.html vdvia-chrome.js chrome.html vdvia-news.js news.html
+mkdir -p img && cp "$SRC/img/"*.jpg ./img/
+git add vdvia-home.js index.html vdvia-chrome.js chrome.html vdvia-news.js news.html img
 git commit -q -m "${1:-홈 컴포넌트 갱신}" || { echo "변경 없음"; exit 0; }
 git push origin main 2>&1 | tail -1
 echo "게시: https://solleegraphic.github.io/vdvia-web/  (반영까지 약 1분)"
