@@ -2,6 +2,8 @@
  * 정본: Figma [VDVIA] Design › 'VDVIA Home 1440 (PC)_sol 수정_1'(1173:966) 의 Header 1173:968 + Footer 1173:1089 (락업 = 1194:2 흰색 SVG).
  *       헤더 로고(2026-11-05): 수정_2, 수정_3 헤더의 'VDVIA lockup (black svg)' = 검은 락업 110×35.7, #000.
  *       세로 위치는 Sol 조정본(Home EN 수정_3 1209:2278) x128 y22: 락업 윗선 = 메뉴 글줄 윗선(22), VDVIA 글자가 메뉴와 같은 높이, 태그라인은 그 아래.
+ *       메뉴(2026-11-05, Sol "메뉴부터 통일"): 수정_3 헤더 Nav 1209:2303 = Company, Brand, What is Different, News, Contact (간격 50, 가운데),
+ *       푸터 1209:2405 = 열 5개 x 470+168n 170폭, 회사 정보 콜론 앞 띄어쓰기 없음.
  *       모바일(≤1280)은 ../_build/figma_home_build.js 의 header()/footerMob() 390 스펙.
  * 링크 규칙(Sol 2026-11-04): 로고 = Company = 홈(/). 나머지는 vdvia.com 기존 페이지 주소.
  * 빌드 도구 없음, 바닐라 ES2017, 외부 의존성은 Pretendard Variable CDN 하나.
@@ -14,18 +16,19 @@
   var LINKS = {
     home: '/', company: '/', brand: '/services-1', wid: '/what-is-difference', contact: '/contact-8',
     mission: '/mission-and-vision', vision: '/mission-and-vision', coreValue: '/what-we-do', structure: '/about-3',
-    lemonderma: '/services-1', xomage: '/services-1', privacy: ''
+    lemonderma: '/services-1', xomage: '/services-1', news: '/news', privacy: ''
   };
-  var NAV = [['Company', 'company'], ['Brand', 'brand'], ['What is Different', 'wid'], ['Contact', 'contact']];
+  var NAV = [['Company', 'company'], ['Brand', 'brand'], ['What is Different', 'wid'], ['News', 'news'], ['Contact', 'contact']];
   var FOOTER = {
     copy: '© 2026 VDVIA',
-    info: ['Company : VDVIA Co., Ltd.', 'CEO : Seung Hwan Lee', 'HQ : 5F, 18 Apgujeong-ro 28-gil, Gangnam-gu, Seoul, Korea', 'Business Registration No. : 331-86-01800'],
+    info: ['Company: VDVIA Co., Ltd.', 'CEO: Seung Hwan Lee', 'HQ: 5F, 18 Apgujeong-ro 28-gil, Gangnam-gu, Seoul, Korea', 'Business Registration No.: 331-86-01800'],
     privacy: 'Privacy Policy', family: 'Family Site',
     familySites: [['ZISHEL', 'https://www.zishel.com'], ['Lemonderma', 'https://www.lemonderma.co.kr']],
     cols: [
       ['Company', 'company', [['Mission', 'mission'], ['Vision', 'vision'], ['Core Value', 'coreValue'], ['Structure', 'structure']]],
       ['Brand', 'brand', [['Lemonderma', 'lemonderma'], ['ZISHEL XOMAGE COSMETICS', 'xomage']]],
       ['What is Different', 'wid', []],
+      ['News', 'news', []],
       ['Contact', 'contact', []]
     ]
   };
@@ -145,16 +148,16 @@
     '.fam-list{display:none;position:absolute;left:0;top:40px;width:180px;background:#000;border:1px solid #3a3a3a;border-top:0;z-index:5}.fam.open .fam-list{display:block}',
     '.fam-list a{display:block;padding:8px 12px;font-size:14px;line-height:24px;color:#ccc}.fam-list a:hover{color:#fff;background:#141414}',
     '.lockup{display:block;width:100%;max-width:592px;margin:60px auto 0;color:#fff}.lockup svg{display:block;width:100%;height:auto}',
-    /* 데스크톱 (Figma 1173:1089: 680 높이, © 128/30, 정보 250폭 69, 개인정보 223, 셀렉트 303 180×40, 열 x 342+194n 170폭, 락업 592 가운데 하단 60) */
+    /* 데스크톱 (Figma 수정_3 1209:2405: 680 높이, © 128/30, 정보 250폭 69, 개인정보 223, 셀렉트 279 180×40, 열 5개 x 470+168n 170폭(2px 겹침), 락업 592 가운데 하단 60) */
     '@media (min-width:1281px){',
     '.f-in{position:relative;height:680px;padding:0}',
     '.f-left{position:absolute;left:0;top:30px;width:250px}',
     '.f-copy{margin-top:0}',
     '.f-info{margin-top:15px;font-size:14px;line-height:24px}',
     '.f-priv{margin-top:10px;font-size:14px;line-height:24px}',
-    '.fam{margin-top:56px}',
-    '.f-cols{position:absolute;left:342px;top:30px;display:flex;gap:24px}',
-    '.fc{width:170px}',
+    '.fam{margin-top:32px}', /* 수정_3: 개인정보 아래 32 (셀렉트 y279) */
+    '.f-cols{position:absolute;left:342px;top:30px;display:flex;gap:0}',
+    '.fc{width:170px}.fc+.fc{margin-left:-2px}',
     '.fh{display:block;padding:0;border:0;font-size:14px;line-height:18px;color:#959595;margin-bottom:19px}.fh .sg{display:none}',
     '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
     '.lockup{position:absolute;left:50%;bottom:60px;width:592px;margin:0;transform:translateX(-50%)}',
