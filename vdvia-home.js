@@ -80,17 +80,20 @@
       [
         "Healthcare",
         "VDVIA HEALTHCARE builds online and offline wellness brands and services, operating on a vertically integrated model that spans R&D, manufacturing, marketing and distribution.",
-        "healthcare.jpg"
+        "healthcare.jpg",
+        "Researchers working in a laboratory"
       ],
       [
         "Lifestyle",
         "VDVIA LIFESTYLE creates beauty brands grounded in exosome science. Through Lemonderma and ZISHEL XOMAGE COSMETICS, we bring clinic-proven technology into everyday skincare for consumers worldwide.",
-        "lifestyle.jpg"
+        "lifestyle.jpg",
+        "Woman doing a skincare routine at a window"
       ],
       [
         "Creativity",
         "VDVIA CREATIVITY provides in-house brand building and content creation, backed by best-in-class marketing infrastructure, instant access to K-content production and end-to-end e-commerce solutions for brands.",
-        "creativity.jpg"
+        "creativity.jpg",
+        "Photographing cosmetics for brand content"
       ]
     ]
   }
@@ -120,7 +123,7 @@
     /* 히어로 550: 리드 위 116, 제목 위 367 (News와 같은 두 크기 제목 보정: 첫 줄 -2, 둘째 줄 +10) */
     '.hero{height:550px}',
     '.hero .in{height:100%}',
-    '.hlead{position:absolute;left:0;top:116px;width:491px;max-width:100%}',
+    '.hlead{position:absolute;left:0;top:117px;width:491px;max-width:100%}', /* 116 + Pretendard 23/33 보정 1 (.t23의 top을 덮으므로 여기서 합산) */
     '.ht{position:absolute;left:0;top:367px;font-weight:400}',
     '.ht span{display:block;white-space:nowrap;letter-spacing:-0.02em}',
     '.ht .l1{font-size:min(39.12px, calc((100vw - 48px) * 0.03304));line-height:min(39.12px, calc((100vw - 48px) * 0.03304));position:relative;top:-2px}',
@@ -167,12 +170,14 @@
     '.sbody{margin-top:10px;font-size:14px;line-height:22px;position:relative;top:var(--t14-dy,1px)}',
     /* 769~1280: 같은 배치, 좌우 24 */
     '@media (max-width:1280px){.in{max-width:none;margin:0 24px}}',
+    /* 769~900: About 오른쪽 글 열이 170px대로 좁아져 캡션 열을 줄인다(검토 에이전트 769px 실측) */
+    '@media (max-width:900px){.ab-grid{grid-template-columns:minmax(0,612fr) minmax(0,60fr) minmax(0,14fr) minmax(0,284fr)}}',
     /* 768 이하: 모바일 */
     '@media (max-width:768px){',
     '.hero{height:auto;padding:80px 0 60px}',
     '.hlead,.ht{position:static;width:auto}',
     '.ht{margin-top:120px}',
-    '.ht span{white-space:normal}',
+    '.ht span{white-space:normal;text-wrap:balance}', /* 320에서 첫 줄 끝에 한 단어만 남지 않게 */
     '.ht .l1{font-size:17px;line-height:20px;top:0}',
     '.ht .l2{font-size:44px;line-height:44px;top:0;margin-top:8px}',
     '.hlead{font-size:20px;line-height:30px}',
@@ -221,7 +226,7 @@
       '<div class="gap280" aria-hidden="true"></div>' +
       '<section class="st"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
       '<div class="head2"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
-      '<div class="scells" role="list"><i class="svr" style="left:33.3333%"></i><i class="svr" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<div class="scells" role="list"><i class="svr" aria-hidden="true" style="left:33.3333%"></i><i class="svr" aria-hidden="true" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="' + esc(c[3]) + '" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap180" aria-hidden="true"></div>';
   }
 
