@@ -47,7 +47,7 @@
 };
 
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function br(s) { return esc(s).replace(/ ?\u2028/g, ' <br class="d">').replace(/ ?\n/g, '<br>'); }
+  function br(s) { return esc(s).replace(/ ?\u2028/g, ' <br class="d">').replace(/ ?\n/g, ' <br>'); } /* 줄 끝 공백은 그려지지 않고, textContent에서 낱말이 붙지 않게 */
   function flat(s) { return String(s).replace(/\s*[\u2028\n]\s*/g, ' '); }
   function injectFonts() {
     if (typeof document === 'undefined') return;
@@ -100,7 +100,7 @@
     '.lead{font-size:20px;line-height:30px;top:1px}',
     '.body{margin-top:24px}',
     '.gap1{height:120px}',
-    '.disp{font-size:min(72px, calc((100vw - 48px) * 0.2));line-height:min(62px, calc((100vw - 48px) * 0.172));top:-3px}', /* Differences가 320(글 폭 272)에서 한 줄에 들어가게 */
+    '.disp{font-size:min(72px, calc((100vw - 48px) * 0.21));line-height:min(62px, calc((100vw - 48px) * 0.1806));top:-3px}', /* Differences가 320(글 폭 272)에서 한 줄에 들어가게 */
     '.rows{margin-top:90px}',
     '.row{display:block;padding:36px 0 35px}',
     '.num{display:block}',
@@ -112,7 +112,7 @@
 
   function html(D) {
     return '<style>' + CSS + '</style><div lang="en">' +
-      '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif"><span class="l1">' + esc(D.hero[0]) + '</span><span class="l2">' + esc(D.hero[1]) + '</span></h1></div></section>' +
+      '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif"><span class="l1">' + esc(D.hero[0]) + '</span> <span class="l2">' + esc(D.hero[1]) + '</span></h1></div></section>' +
       '<section class="intro"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
       '<div class="two"><p class="lead">' + br(D.lead) + '</p><p class="body">' + br(D.body) + '</p></div></div></section>' +
       '<div class="gap1" aria-hidden="true"></div>' +
