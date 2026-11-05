@@ -98,6 +98,8 @@
     '.gap2{height:180px}',
     /* 769~1280: 같은 배치, 좌우 24 */
     '@media (max-width:1280px){.in{max-width:none;margin:0 24px}}',
+    /* 제목 강제 줄바꿈(U+2028)은 제목 열이 충분히 넓은 1101 이상에서만. 그 아래는 짧은 줄이 남아(검토 에이전트 800px 실측) 공백으로 잇는다 */
+    '@media (max-width:1100px){.d{display:none}}',
     /* 768 이하: 모바일(SUBm 규칙을 수정_3 히어로 비율로) */
     '@media (max-width:768px){',
     '.hero{height:auto;padding:184px 0 40px}',
@@ -114,8 +116,7 @@
     '.date{display:block}',
     '.ttl{margin-top:30px;font-size:20px;line-height:30px}',
     '.desc{margin-top:12px}',
-    '.d{display:none}',
-    '.gap2{height:120px}',
+        '.gap2{height:120px}',
     '}'
   ].join('\n');
 
@@ -125,8 +126,8 @@
       '<section class="intro"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
       '<div class="two"><p class="lead">' + br(D.lead) + '</p><p class="body">' + br(D.body) + '</p></div></div></section>' +
       '<div class="gap1" aria-hidden="true"></div>' +
-      '<section class="list"><div class="in"><h2 class="year serif">' + esc(D.year) + '</h2><ol class="rows">' +
-      D.items.map(function (it) { return '<li class="row"><time class="date">' + esc(it[0]) + '</time><h3 class="ttl">' + br(it[1]) + '</h3><p class="desc">' + br(it[2]) + '</p></li>'; }).join('') +
+      '<section class="list"><div class="in"><h2 class="year serif">' + esc(D.year) + '</h2><ol class="rows" role="list">' +
+      D.items.map(function (it) { var m = /^(\d{4})\.(\d{2})$/.exec(it[0]); return '<li class="row"><time class="date"' + (m ? ' datetime="' + m[1] + '-' + m[2] + '"' : '') + '>' + esc(it[0]) + '</time><h3 class="ttl">' + br(it[1]) + '</h3><p class="desc">' + br(it[2]) + '</p></li>'; }).join('') +
       '</ol></div></section><div class="gap2" aria-hidden="true"></div>';
   }
 
