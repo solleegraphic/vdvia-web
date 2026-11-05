@@ -6,7 +6,7 @@
  *     오른쪽 폼: Message 16/26 Bold → 24 → First | Last(284 | 24 | 284) → 32 → Email → 32 → Message(4줄 104) → 40 → Send 240x48 1px 테두리
  *     칸 = 라벨 13/18 #555 → 10 → 입력 16/26 → 10 → 1px 룰 | 여백 180
  * 폼: 보내기를 누르면 이벤트 'vdvia-contact-submit'(detail: firstName, lastName, email, message)를 낸다. 윅스 페이지 코드가 백엔드로 접수한 뒤
- *   이 요소의 status 속성을 'sent' 또는 'error'로 바꾸면 결과 문구를 보여 준다. 20초 안에 답이 없으면 오류 문구(메일 안내). 숨은 칸(website)에 값이 있으면 봇으로 보고 보내지 않는다.
+ *   이 요소의 status 속성을 'sent' 또는 'error'(뒤에 ':아무값' 허용)로 바꾸면 결과 문구를 보여 준다. 20초 안에 답이 없으면 오류 문구(메일 안내). 숨은 칸(website)에 값이 있으면 봇으로 보고 보내지 않는다.
  *   데모: demo 속성을 주면 0.6초 뒤 sent로 답한다.
  * 1281 이상: 컨테이너 1184 가운데. 769~1280: 같은 배치를 좌우 24 여백으로. 768 이하(윅스 모바일 320 포함): News 모바일 규칙, 폼은 정보 아래로, 이름 두 칸은 세로로.
  * 윅스: Custom Element, Server URL = 이 파일, Tag = vdvia-contact, 전체 폭.
@@ -192,6 +192,7 @@
       if (this.hasAttribute('demo')) setTimeout(function () { self.setAttribute('status', 'sent'); }, 600);
     }
     _result(v) {
+      v = String(v || '').split(':')[0]; /* 페이지 코드는 'sent:시각'처럼 매번 다른 값을 줄 수 있다(같은 값이면 변경 알림이 안 오므로) */
       if (v !== 'sent' && v !== 'error') return;
       var r = this.shadowRoot, M = DATA.msg;
       clearTimeout(this._timer); this._busy = false; r.querySelector('.send').disabled = false;
