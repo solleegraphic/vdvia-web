@@ -46,7 +46,7 @@
       "photo": "brand_xomage.jpg",
       "photoW": 758,
       "photoH": 474,
-      "alt": "ZISHEL XOMAGE COSMETICS skincare bottles on a white background",
+      "alt": "ZISHEL XOMAGE COSMETICS skincare bottles and a round jar on a white background",
       "lead": "Zishel Group’s clinic skin-booster exosomes, trusted in 50 countries, now in everyday skincare.",
       "body": "Exo PDRN skincare from Korea, from masks to daily essentials. Enjoy clinic-inspired care at home."
     }
@@ -95,7 +95,9 @@
     '.txt{grid-column:2;margin-top:16px}',
     '.txt .helv{margin-top:8px}',
     /* 769~1280: 같은 배치, 좌우 24 */
-    '@media (max-width:1280px){.in{max-width:none;margin:0 24px}}',
+    '@media (max-width:1280px){.in{max-width:none;margin:0 24px}.t16,.helv{text-wrap:pretty}}', /* 피그마가 줄을 정한 1281 이상은 그대로, 그 아래만 마지막 줄 한 단어 방지 */
+    /* 769~900: 2열(378.67)이 224px까지 좁아져 브랜드 칸을 전체 폭으로 편다(검토 에이전트 769 실측) */
+    '@media (max-width:900px){.brand{grid-column:1/4}}',
     /* 768 이하: 모바일 */
     '@media (max-width:768px){',
     '.gap116{height:80px}',
@@ -105,7 +107,7 @@
     '.disp{font-size:48px;line-height:51px;top:0;white-space:normal}', /* 피그마처럼 줄 높이 정수 */
     '.top .r{margin-top:32px}',
     '.t23{font-size:20px;line-height:30px;text-wrap:balance}', /* 320에서 ritual. 한 단어만 남지 않게 */
-    '.top .helv{margin-top:12px}',
+    '.top .helv{margin-top:24px}', /* 홈, News 모바일과 같은 간격 */
     '.list{margin-top:120px}',
     '.brand + .brand{margin-top:80px}',
     '.txt{margin-top:20px}',
@@ -116,10 +118,10 @@
   function html(D, base) {
     return '<style>' + CSS + '</style>' +
       '<div class="gap116" aria-hidden="true"></div>' +
-      '<section class="brands"><div class="in">' +
+      '<section class="brands" lang="en" aria-labelledby="vb-title"><div class="in">' +
       '<p class="lab">' + esc(D.label) + '</p>' +
       '<div class="g3 rules" role="presentation"><div class="rule"></div><div class="rule"></div></div>' +
-      '<div class="g3 top"><h1 class="disp serif">' + lines(D.title) + '</h1><div class="r"><p class="t23">' + lines(D.lead) + '</p><p class="helv">' + lines(D.body) + '</p></div></div>' +
+      '<div class="g3 top"><h1 class="disp serif" id="vb-title">' + lines(D.title) + '</h1><div class="r"><p class="t23">' + lines(D.lead) + '</p><p class="helv">' + lines(D.body) + '</p></div></div>' +
       '<ul class="g3 list" role="list">' + D.brands.map(function (b, i) {
         return '<li class="brand b' + (i + 1) + '"><h2 class="bname"><img class="logo" src="' + esc(base + b.logo) + '" width="' + b.logoW + '" height="' + b.logoH + '" alt="' + esc(b.name) + '"></h2>' +
           '<div class="rule" role="presentation"></div>' +
@@ -135,7 +137,7 @@
     static get observedAttributes() { return ['img-base']; }
     connectedCallback() { injectFonts(); this._render(); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
-    _render() { this.shadowRoot.innerHTML = html(DATA, this.getAttribute('img-base') || IMG_BASE); }
+    _render() { this.shadowRoot.innerHTML = html(DATA, (this.getAttribute('img-base') || IMG_BASE).replace(/\/?$/, '/')); } /* 끝 슬래시가 없어도 되게 */
   }
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)
