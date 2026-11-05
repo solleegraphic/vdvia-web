@@ -1,6 +1,7 @@
 /* VDVIA 헤더, 푸터 웹 컴포넌트 <vdvia-header> <vdvia-footer>  (2026-11-04)
  * 정본: Figma [VDVIA] Design › 'VDVIA Home 1440 (PC)_sol 수정_1'(1173:966) 의 Header 1173:968 + Footer 1173:1089 (락업 = 1194:2 흰색 SVG).
- *       헤더 로고(2026-11-05): 수정_2, 수정_3 헤더의 'VDVIA lockup (black svg)' (예 1209:2278) = 검은 락업 110×35.7, x128 y14, #000.
+ *       헤더 로고(2026-11-05): 수정_2, 수정_3 헤더의 'VDVIA lockup (black svg)' = 검은 락업 110×35.7, #000.
+ *       세로 위치는 Sol 조정본(Home EN 수정_3 1209:2278) x128 y22: 락업 윗선 = 메뉴 글줄 윗선(22), VDVIA 글자가 메뉴와 같은 높이, 태그라인은 그 아래.
  *       모바일(≤1280)은 ../_build/figma_home_build.js 의 header()/footerMob() 390 스펙.
  * 링크 규칙(Sol 2026-11-04): 로고 = Company = 홈(/). 나머지는 vdvia.com 기존 페이지 주소.
  * 빌드 도구 없음, 바닐라 ES2017, 외부 의존성은 Pretendard Variable CDN 하나.
@@ -66,11 +67,11 @@
     ':host{background:#fff;color:#141414}',
     '.hd{height:64px;background:#fff}',
     '.hd .in{height:64px;display:flex;align-items:center;justify-content:space-between;position:relative}',
-    '.logo{display:block;width:96px;flex:none;color:#000}.logo svg{display:block;width:100%;height:auto}', /* 64 높이 안에서 세로 가운데 (1440: y14 = 피그마) */
+    '.logo{display:block;width:96px;flex:none;color:#000;align-self:flex-start;margin-top:24px}.logo svg{display:block;width:100%;height:auto}', /* 세로 가운데가 아니라 VDVIA 글자를 메뉴 버튼 높이에 (모바일 24, 1440 22 = 피그마) */
     '.nav{display:none}',
     '.menu{width:22px;height:11px;position:relative;flex:none;padding:0}.menu i{position:absolute;left:0;top:0;width:22px;height:1.5px;background:#141414}.menu i+i{top:9.5px}',
     '@media (min-width:1281px){',
-    '.logo{width:110px}',
+    '.logo{width:110px;margin-top:22px}',
     '.nav{display:flex;gap:50px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;line-height:20px;font-weight:600;white-space:nowrap}',
     '.nav a:hover{opacity:.6}',
     '.menu{display:none}',
@@ -80,7 +81,7 @@
   var MNAV_CSS = '#vdvia-mnav{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;background:#fff;color:#141414;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;overflow:auto}' +
     '#vdvia-mnav *{box-sizing:border-box;margin:0;padding:0}#vdvia-mnav a{color:inherit;text-decoration:none}#vdvia-mnav ul{list-style:none}' +
     '#vdvia-mnav .bar{height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between}' +
-    '#vdvia-mnav .logo{display:block;width:96px;color:#000}#vdvia-mnav .logo svg{display:block;width:100%;height:auto}' +
+    '#vdvia-mnav .logo{display:block;width:96px;color:#000;align-self:flex-start;margin-top:24px}#vdvia-mnav .logo svg{display:block;width:100%;height:auto}' +
     '#vdvia-mnav .x{width:22px;height:22px;position:relative;background:none;border:0;cursor:pointer;padding:0}#vdvia-mnav .x i{position:absolute;left:0;top:10px;width:22px;height:1.5px;background:#141414;transform:rotate(45deg)}#vdvia-mnav .x i+i{transform:rotate(-45deg)}' +
     '#vdvia-mnav nav{padding:24px 24px 40px}#vdvia-mnav nav a{display:block;padding:14px 0;font-size:22px;line-height:32px;font-weight:600;border-bottom:1px solid #e9e9e9}' +
     '#vdvia-mnav nav a:first-child{border-top:1px solid #141414}';
