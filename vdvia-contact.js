@@ -26,7 +26,7 @@
   ],
   "label": "Contact",
   "lead": "For partnerships, products\nand careers, write to us.",
-  "body": "Reach us through the contacts below or the form.",
+  "body": "Reach us through the contacts below \u2029or the form.",
   "rows": [
     [
       "Email",
@@ -62,9 +62,9 @@
 };
 
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function br(s) { return esc(s).replace(/ ?\u2028/g, ' <br class="d">').replace(/ ?\n/g, ' <br>'); }
+  function br(s) { return esc(s).replace(/ ?\u2029/g, ' <br class="m">').replace(/ ?\u2028/g, ' <br class="d">').replace(/ ?\n/g, ' <br>'); }
   function nw(s) { return esc(s).replace(/(\S*-\S*)/g, '<span class="nw">$1</span>'); } /* Gangnam-gu처럼 하이픈 낱말은 줄 끝에서 끊지 않는다 */
-  function flat(s) { return String(s).replace(/\s*[\u2028\n]\s*/g, ' '); }
+  function flat(s) { return String(s).replace(/\s*[\u2028\u2029\n]\s*/g, ' '); }
   function injectFonts() {
     if (typeof document === 'undefined') return;
     FONT_LINKS.forEach(function (f) {
@@ -133,6 +133,7 @@
     '.contact{min-height:' + fv(480, 552) + '}',
     '.lab,.ftitle{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
     '.rule{height:1px;background:#141414}',
+    '.m{display:none}',
     '.contact .in > .rule{margin-top:6px}',
     '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:' + fv(24, 30) + ';align-items:start}',
     '.info{grid-column:1}',
@@ -176,20 +177,33 @@
     '@media (max-width:1000.98px){.send-row{flex-wrap:wrap;column-gap:24px;row-gap:16px}.status{flex:1 1 100%;min-height:36px}}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
-    '.in{margin:0 24px}',
-    '.intro{margin-top:24px}.info .rule.r1{margin-top:48px}',
-    '.hero{height:auto;padding:184px 0 40px}',
+    '.in{margin:0 29.25px}',
+    '.hero{height:auto;padding:200px 0 40px}',
     '.ht{position:static}',
-    '.ht .l1{font-size:17px;line-height:17px;top:-1px}',
-    '.ht .l2{font-size:48px;line-height:48px;top:5px}',
+    '.ht .l1{font-size:24px;line-height:28.5px;letter-spacing:0;top:0}',
+    '.ht .l2{font-size:58px;line-height:55.5px;letter-spacing:-1.0725px;top:0;margin-top:23px}',
+    '.lab,.ftitle{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
+    '.contact .in > .rule{margin-top:6.7px}',
+    '.m{display:inline}',
     '.contact{min-height:0}',
-    '.two{display:block;margin-top:21px}',
-    '.lead{font-size:20px;line-height:30px;top:1px}',
-    '.form{margin-top:80px}',
-    '.frow{display:block}',
-    '.frow .field + .field{margin-top:32px}',
-    '.send{width:100%}', /* 모바일은 칸들과 같은 전체 폭(2026-11-06 Sol) */
-    '.gap{height:120px}',
+    '.two{display:block;margin-top:25.8px}',
+    '.lead{font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0}',
+    '.t16{font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
+    '.t13{font-size:14px;line-height:21.9375px;letter-spacing:-.195px;top:0}',
+    '.intro{margin-top:39.8px}',
+    '.info .rule.r1{margin-top:57.7px;background:rgba(20,20,20,.3)}',
+    '.rows{margin-top:29.5px}',
+    '.rows dd{margin-top:5px}',
+    '.rows dd + dt{margin-top:41.8px}',
+    '.info .rule.r2{margin-top:41.8px;background:rgba(20,20,20,.3)}',
+    '.form{margin-top:128px}',
+    '.frow{display:block;margin-top:25.8px}',
+    '.frow .field + .field,.f-email,.f-msg{margin-top:39px}',
+    '.finput{height:52px;padding:13px 0;font-size:18px;line-height:26px;letter-spacing:-.195px}',
+    'textarea.finput{height:130px}',
+    '.send-row{margin-top:48.75px}',
+    '.send{width:100%;height:48.8px;font-size:18px;line-height:18px;letter-spacing:-.195px}',
+    '.gap{height:75.5px}',
     '}',
     ZOOM,
     MOTION_CSS

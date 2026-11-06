@@ -32,13 +32,13 @@
   "mission": {
     "label": "Mission",
     "display": "Quality \u2028of Life",
-    "lead": "Better everyday life, backed by science.",
+    "lead": "Better everyday life, \u2029backed by science.",
     "body": "Our mission is to improve quality of life worldwide with science-backed, high-efficacy, low-irritation health & beauty solutions. Every product starts from research and data, so what is proven in the lab works just as well in daily routines."
   },
   "vision": {
     "label": "Vision",
     "display": "Research\nto Retail",
-    "lead": "The most trusted health & beauty brand group.",
+    "lead": "The most trusted \u2029health & beauty brand group.",
     "body": "Our vision is to transform the entire research-to-retail value chain with next-generation biomedical technology and AI. From Zishel’s laboratory research to the brands in our customers’ hands, we design the whole journey."
   },
   "core": {
@@ -48,27 +48,27 @@
     "cells": [
       [
         "Scientific Integrity",
-        "Evidence that’s reproducible, verification that’s transparent."
+        "Evidence that’s reproducible, \u2029verification that’s transparent."
       ],
       [
         "Accessibility",
-        "Making the best accessible, fairly and widely."
+        "Making the best accessible, \u2029fairly and widely."
       ],
       [
         "Innovation with AI",
-        "Rapid experimentation, precise improvement, powered by AI."
+        "Rapid experimentation, \u2029precise improvement, powered by AI."
       ],
       [
         "Collaboration",
-        "Open partnerships that compound value."
+        "Open partnerships \u2029that compound value."
       ],
       [
         "Sustainability",
-        "Designing profit with environmental and social responsibility."
+        "Designing profit with \u2029environmental and social responsibility."
       ],
       [
         "Customer-Centricity",
-        "Improving every moment of the customer journey with data."
+        "Improving every moment \u2029of the customer journey with data."
       ]
     ]
   },
@@ -100,7 +100,7 @@
 };
 
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function lines(s) { return esc(s).replace(/ ?(\u2028|\n)/g, '<br>'); }
+  function lines(s) { return esc(s).replace(/ ?\u2029/g, ' <br class="m">').replace(/ ?(\u2028|\n)/g, '<br>'); } /* U+2029 = 767 이하에서만 끊는 자리(Sol 수정본) */
   function injectFonts() {
     if (typeof document === 'undefined') return;
     FONT_LINKS.forEach(function (f) {
@@ -123,7 +123,7 @@
   var MOTION_CSS = '.mk,.mi{display:block}@media (prefers-reduced-motion:no-preference){' +
     '.rv{opacity:0;transition:opacity .8s ' + RV_EASE + ' var(--rv-d,0ms)}.rv.on{opacity:1}' +
     '.mk{clip-path:inset(-.12em -1em -.24em -1em)}.mk .mi{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.mk.on .mi{transform:none}' +
-    '.d2{--rv-d:200ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
+    '.d2{--rv-d:200ms}.d4{--rv-d:400ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
     '}@media print{.rv{opacity:1!important}.mk .mi{transform:none!important}}';
   /* 제목 한 줄: .mk가 가리개, .mi가 아래에서 올라온다 */
   function mk(cls, inner) { return '<span class="' + cls + ' mk hs"><span class="mi">' + inner + '</span></span>'; }
@@ -159,6 +159,7 @@
     'img{display:block;width:100%;height:auto}',
     '.serif{font-family:' + SERIF + ';font-weight:400}',
     '.rule{height:1px;background:#141414}',
+    '.m{display:none}',
     '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
     '.t23{font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:1px}',
     '.t16{font-size:16px;line-height:26px;position:relative;top:2px}',
@@ -216,38 +217,52 @@
     '@media (max-width:1023.98px){.in{margin:0 32px}}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
-    '.in{margin:0 24px}',
-    '.hero{height:auto;padding:80px 0 60px}',
+    '.in{margin:0 29.25px}',
+    '.m{display:inline}',
+    '.t16,.helv,.lab,.t23{top:0}',
+    '.lab{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
+    '.hero{height:auto;padding:97.5px 0 20px}',
     '.hlead,.ht{position:static;width:auto}',
-    '.ht{margin-top:120px}',
-    '.ht span{white-space:normal;text-wrap:balance}', /* 320에서 첫 줄 끝에 한 단어만 남지 않게 */
-    '.ht .l1{font-size:17px;line-height:20px;top:0}',
-    '.ht .l2{font-size:48px;line-height:48px;top:0;margin-top:8px}',
-    '.hlead{font-size:20px;line-height:30px}',
+    '.hlead{font-size:21.5px;line-height:30.5px;letter-spacing:0}',
+    '.ht{margin-top:123.5px}',
+    '.ht span{white-space:normal;text-wrap:balance}',
+    '.ht .l1{font-size:24px;line-height:28.5px;letter-spacing:0;top:0}',
+    '.ht .l2{font-size:58px;line-height:55.5px;letter-spacing:-1.0725px;top:0;margin-top:23px}',
     '.about{min-height:0}',
-    '.ab-grid{display:flex;flex-direction:column;margin-top:16px}',
-    '.ab-cap{order:-1;writing-mode:horizontal-tb;margin:0 0 10px;left:0;top:0}',
+    '.ab-grid{display:flex;flex-direction:column;margin-top:19.1px}',
+    '.ab-cap{order:-1;writing-mode:horizontal-tb;font-size:14px;line-height:21.9375px;letter-spacing:-.195px;top:0;margin:0 0 12.76px;left:0}',
     '.ab-vr{display:none}',
-    '.ab-under{width:auto}',
-    '.ab-txt{margin-top:48px}',
-    '.ab-head{font-size:18px}',
-    '.ab-body{margin-top:24px}',
-    '.gap53,.gap280,.gap180{height:120px}',
+    '.ab-under{width:auto;margin-top:18.9px;font-size:16px;line-height:23.5px;letter-spacing:0;color:#747474}',
+    '.ab-txt{margin-top:42px}',
+    '.ab-head{font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0}',
+    '.helv{font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
+    '.ab-body{margin-top:40.3px;color:#141414}',
+    '.gap53{height:128.2px}',
+    '.mission + .gap280{height:110.7px}.vision + .gap280{height:138.7px}.core + .gap280{height:161.1px}',
+    '.gap180{height:75.5px}',
     '.mission,.vision,.core{min-height:0}',
     '.mv .cols,.head2{display:block}',
+    '.mv .rules{margin-top:6.7px}',
     '.mv .rules .rule:first-child{display:none}',
-    '.disp,.st .disp90{font-size:48px;line-height:51px;top:0}', /* 피그마처럼 줄 높이 정수 */
-    '.mv .disp,.head2 .disp,.st .disp90{margin-top:21px}',
-    '.mv .t23,.head2 .t16{margin-top:32px}',
-    '.mv .t23{font-size:20px;line-height:30px;text-wrap:balance}', /* 마지막 줄 한 단어 방지 */
-    '.mv .helv{margin-top:24px}',
-    '.cells{display:block;margin-top:60px}',
-    '.cell + .cell{margin-top:48px}',
-    '.cell .rule{margin-top:13px}.cell .t16{margin-top:20px}',
-    '.cname{font-size:36px;line-height:36px;white-space:normal;top:0}',
-    '.scells{display:block;margin-top:60px;border-bottom:0}',
+    '.core .in > .rule,.st .in > .rule{margin-top:6.7px!important}',
+    '.disp{font-size:55.5px;line-height:64px;letter-spacing:-.585px;top:0}',
+    '.st .disp90{font-size:58.5px;line-height:64px;letter-spacing:-.585px;top:0}',
+    '.mv .disp,.head2 .disp,.st .disp90{margin-top:25.8px}',
+    '.mv .t23{margin-top:6.6px;font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0}',
+    '.mv .helv{margin-top:72.5px}',
+    '.head2 .t16{margin-top:7.1px;font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0;font-weight:600}',
+    '.st .head2 .t16{margin-top:20.3px}',
+    '.cells{display:block;margin-top:76px}',
+    '.cell + .cell{margin-top:50.1px}.cell:nth-child(n+4){margin-top:60px}',
+    '.cname{font-size:35px;line-height:43.875px;letter-spacing:-.43875px;white-space:normal;top:0}',
+    '.cell .rule{margin-top:5.8px;background:rgba(20,20,20,.3)}',
+    '.cell:last-child .rule{margin-top:9.6px}',
+    '.cell .t16{margin-top:14.4px;font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
+    '.scells{display:block;margin-top:58.2px;border-top:1px solid rgba(20,20,20,.3);border-bottom:0}',
     '.svr{display:none}',
-    '.scell{min-height:0;padding:24px 0 32px;border-bottom:1px solid #141414}',
+    '.scell{min-height:0;padding:29.5px 0 42.8px;border-bottom:1px solid rgba(20,20,20,.3)}',
+    '.stitle{margin-top:25px;font-size:18px;line-height:30.46875px;letter-spacing:-.195px;top:0}',
+    '.sbody{margin-top:12.3px;font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
     '}',
     ZOOM,
     MOTION_CSS
@@ -261,7 +276,7 @@
     };
     var C = D.core, S = D.structure, A = D.about;
     return '<style>' + CSS + 'section[id]{scroll-margin-top:88px}</style>' +
-      '<section class="hero"><div class="in"><p class="hlead t23 rv hs">' + lines(D.heroLead) + '</p>' +
+      '<section class="hero"><div class="in"><p class="hlead t23">' + D.heroLead.split(/\u2028|\n/).map(function (t, i) { return mk(i ? 'd4' : 'd2', esc(t.trim())); }).join(' ') + '</p>' +
       '<h1 class="ht serif">' + mk('l1 d6', esc(D.heroTitle[0])) + mk('l2 d8', esc(D.heroTitle[1])) + '</h1></div></section>' +
       '<section class="about rv"><div class="in"><div class="rule"></div><div class="ab-grid">' +
       '<div class="ab-left"><figure class="ab-img"><img src="' + esc(base + 'about.jpg') + '" width="612" height="390" alt="World map with network connections" loading="eager"></figure><p class="ab-under t16">' + lines(A.under) + '</p></div>' +
@@ -270,7 +285,7 @@
       '<div class="gap53" aria-hidden="true"></div>' + mv('mission', D.mission) + '<div class="gap280" aria-hidden="true"></div>' + mv('vision', D.vision) + '<div class="gap280" aria-hidden="true"></div>' +
       '<section id="core-value" class="core"><div class="in"><p class="lab rv">' + esc(C.label) + '</p><div class="rule rv" style="margin-top:6px"></div>' +
       '<div class="head2 rv"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
-      '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell rv rs" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell rv rs" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + lines(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap280" aria-hidden="true"></div>' +
       '<section id="structure" class="st"><div class="in"><p class="lab rv">' + esc(S.label) + '</p><div class="rule rv" style="margin-top:6px"></div>' +
       '<div class="head2 rv"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
@@ -310,7 +325,7 @@
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)
   if (typeof window !== 'undefined') {
-    var p = function (s) { return '<p>' + esc(String(s).replace(/ ?(\u2028|\n)/g, ' ')) + '</p>'; };
+    var p = function (s) { return '<p>' + esc(String(s).replace(/ ?(\u2028|\u2029|\n)/g, ' ')) + '</p>'; };
     var D = DATA;
     window.VDVIA_HOME_SEO_HTML = '<h1>' + esc(D.heroTitle.join(' ')) + '</h1>' + p(D.heroLead) + p(D.about.head) + p(D.about.body) + p(D.about.under) +
       [D.mission, D.vision].map(function (m) { return '<h2>' + esc(m.display.replace(/ ?(\u2028|\n)/g, ' ')) + '</h2>' + p(m.lead) + p(m.body); }).join('') +

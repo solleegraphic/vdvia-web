@@ -87,7 +87,9 @@
     '.nav{display:flex;gap:50px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;line-height:20px;font-weight:600;white-space:nowrap}',
     '.nav a:hover{opacity:.6}',
     '.menu{display:none}',
-    '}'
+    '}',
+    /* 767 이하: Sol 수정본(피그마 1262:452) 헤더 78, 락업 93 y30, 메뉴 선 26.8×1 y32.3, y43.9 */
+    '@media (max-width:767.98px){:host{height:78px}.hd,.hd .in{height:78px}.in{padding:0 29.25px}.logo{width:93px;margin-top:30px}.menu{width:26.8px;height:12.6px;align-self:flex-start;margin-top:32.3px}.menu i{width:26.8px;height:1px}.menu i+i{top:11.6px}}'
   ].join('\n');
   // 모바일 메뉴 오버레이는 윅스 컨테이너의 overflow/transform 영향을 받지 않도록 document.body 에 붙인다 (light DOM)
   var MNAV_CSS = '#vdvia-mnav{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;background:#fff;color:#141414;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;overflow:auto}' +
@@ -98,6 +100,7 @@
     '#vdvia-mnav nav{padding:24px 24px 40px}#vdvia-mnav nav a{display:block;padding:14px 0;font-size:22px;line-height:32px;font-weight:600;border-bottom:1px solid #e9e9e9}' +
     '#vdvia-mnav nav a:first-child{border-top:1px solid #141414}' +
     '@media (min-width:768px){#vdvia-mnav .bar,#vdvia-mnav nav{padding-left:32px;padding-right:32px}}@media (min-width:1024px){#vdvia-mnav{display:none}}' +
+    '@media (max-width:767.98px){#vdvia-mnav .bar{height:78px;padding:0 29.25px}#vdvia-mnav .logo{width:93px;margin-top:30px}#vdvia-mnav .x{width:26.8px;height:26.8px;align-self:flex-start;margin-top:25.2px}#vdvia-mnav .x i{top:13px;width:26.8px;height:1px}#vdvia-mnav nav{padding:24px 29.25px 40px}#vdvia-mnav nav a{padding:17px 0;font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;border-bottom:1px solid rgba(20,20,20,.3)}#vdvia-mnav nav a:first-child{border-top:1px solid #141414}}' +
     '@media (max-width:389.98px){#vdvia-mnav{zoom:.96154}}@media (max-width:374.98px){#vdvia-mnav{zoom:.92308}}@media (max-width:359.98px){#vdvia-mnav{zoom:.82051}}';
 
   class VdviaHeader extends HTMLElement {
@@ -199,6 +202,8 @@
     '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a,.fc li .tx{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
     '.lockup{position:absolute;left:50%;bottom:60px;width:592px;margin:0;transform:translateX(-50%)}',
     '}',
+    /* 767 이하: Sol 수정본 푸터(윗 여백 68.25까지, 행 64.6, 정보 15.84/26.81, 셀렉트 219.4×48.8, 락업 156 가운데) */
+    '@media (max-width:767.98px){.f-in{padding:48.75px 29.25px 54.5px}.fh{padding:19.6px 0;font-size:17.0625px;line-height:24.375px;letter-spacing:-.195px}.fh .sg{width:29.3px;height:24.375px;line-height:24.375px;font-size:17.0625px}.fc li a,.fc li .tx{font-size:17.0625px;line-height:29.25px}.f-copy{margin-top:49px;font-size:17.0625px;line-height:29.25px;letter-spacing:-.195px}.f-info{margin-top:19px;font-size:15.84375px;line-height:26.8125px;letter-spacing:-.195px}.f-priv{margin-top:12px;font-size:15.84375px;line-height:26.8125px;letter-spacing:-.195px}.fam{margin-top:49.3px;width:219.4px}.sel{width:219.4px;height:48.8px;padding:9px 15px;font-size:17.0625px;line-height:29.25px;letter-spacing:-.195px}.sel .chev{width:12.2px;height:7.3px}.fam-list{width:219.4px;top:48.8px}.fam-list a{padding:9px 15.9px;font-size:17.0625px;line-height:29.25px}.lockup{width:156px;max-width:none;margin:123.9px auto 0}}',
     '@media (max-width:1280.98px){.nb{white-space:nowrap}}', /* 1281 이상은 피그마 줄 그대로, 그 아래는 사업자번호를 하이픈에서 끊지 않는다 */
     '@media (min-width:1024px) and (max-width:1280.98px){.f-in{margin:0 48px}.f-cols{left:28.9%;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:12px}.fc{width:auto}.fc+.fc{margin-left:0}}'
   ].join('\n');

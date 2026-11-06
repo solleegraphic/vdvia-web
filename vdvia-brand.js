@@ -35,7 +35,7 @@
       "photoW": 758,
       "photoH": 553,
       "alt": "Lemonderma serum and cream with fresh lemons and laboratory glassware",
-      "lead": "A vegan dermacosmetic born from Jeju lemon and exosome science.",
+      "lead": "A vegan dermacosmetic born from \u2029Jeju lemon and exosome science.",
       "body": "Lemon exosome and liposomal vitamin C for skin that looks brighter and more radiant. Sold exclusively in pharmacies in Korea."
     },
     {
@@ -47,14 +47,14 @@
       "photoW": 758,
       "photoH": 474,
       "alt": "ZISHEL XOMAGE COSMETICS skincare bottles and a round jar on a white background",
-      "lead": "Zishel Group’s clinic skin-booster exosomes, trusted in 50 countries, now in everyday skincare.",
+      "lead": "Zishel Group’s clinic skin-booster exosomes, trusted in 50 countries, \u2029now in everyday skincare.",
       "body": "Exo PDRN skincare from Korea, from masks to daily essentials. Enjoy clinic-inspired care at home."
     }
   ]
 };
 
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function lines(s) { return esc(s).replace(/ ?(\u2028|\n)/g, '<br>'); }
+  function lines(s) { return esc(s).replace(/ ?\u2029/g, ' <br class="m">').replace(/ ?(\u2028|\n)/g, '<br>'); } /* U+2029 = 767 이하에서만 끊는 자리 */
   function injectFonts() {
     if (typeof document === 'undefined') return;
     FONT_LINKS.forEach(function (f) {
@@ -113,6 +113,7 @@
     'img{display:block}',
     '.serif{font-family:' + SERIF + ';font-weight:400}',
     '.rule{height:1px;background:#141414}',
+    '.m{display:none}',
     '.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:' + fv(16, 24) + '}', /* 1184 = 378.67 x 3 + 24 x 2 */
     '.gap116{height:' + fv(64, 116) + '}.gap180{height:' + fv(110, 180) + '}',
     '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
@@ -144,19 +145,25 @@
     '@media (max-width:900.98px){.brand{grid-column:1/4}}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
-    '.in{margin:0 24px}',
-    '.gap116{height:80px}',
+    '.in{margin:0 29.25px}',
+    '.m{display:inline}',
+    '.gap116{height:97.5px}',
     '.g3,.brand{display:block}',
+    '.lab{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
+    '.rules{margin-top:6.7px}',
     '.rules .rule:first-child{display:none}',
     '.rules .rule:last-child,.top .r{margin-left:0;margin-right:0}',
-    '.disp{font-size:48px;line-height:51px;top:0;white-space:normal;margin-top:21px}', /* 피그마처럼 줄 높이 정수 */
-    '.top .r{margin-top:32px}',
-    '.t23{font-size:20px;line-height:30px;text-wrap:balance}', /* 320에서 ritual. 한 단어만 남지 않게 */
-    '.top .helv{margin-top:24px}', /* 홈, News 모바일과 같은 간격 */
-    '.list{margin-top:120px}',
-    '.brand + .brand{margin-top:80px}',
-    '.txt{margin-top:20px}',
-    '.gap180{height:120px}',
+    '.disp{font-size:55.5px;line-height:64px;letter-spacing:-.585px;top:0;white-space:normal;margin-top:25.8px}',
+    '.top .r{margin-top:6.6px}',
+    '.t23{font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0;text-wrap:balance}',
+    '.t16,.helv{font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
+    '.top .helv{margin-top:72.5px}',
+    '.list{margin-top:128px}',
+    '.brand + .brand{margin-top:128px}',
+    '.photo{margin-top:29.5px}',
+    '.txt{margin-top:25px}',
+    '.txt .helv{margin-top:12.3px}',
+    '.gap180{height:75.5px}',
     '}',
     ZOOM,
     MOTION_CSS
