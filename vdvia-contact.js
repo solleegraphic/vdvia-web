@@ -82,6 +82,40 @@
   /* 390보다 좁으면 390 화면을 그대로 줄인다. 윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다 */
   var ZOOM = '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}';
 
+  /* 등장 애니메이션(구다이 글로벌 기준, 2026-11-06). 움직임 줄이기 설정, 에디터 미리보기(iframe)에서는 전부 바로 보인다. */
+  var RV_EASE = 'cubic-bezier(.215,.61,.355,1)'; /* GSAP power2.out */
+  var MOTION_CSS = '.mk,.mi{display:block}@media (prefers-reduced-motion:no-preference){' +
+    '.rv{opacity:0;transition:opacity .8s ' + RV_EASE + ' var(--rv-d,0ms)}.rv.on{opacity:1}' +
+    '.mk{clip-path:inset(-.12em -1em -.24em -1em)}.mk .mi{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.mk.on .mi{transform:none}' +
+    '.d2{--rv-d:200ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
+    '}@media print{.rv{opacity:1!important}.mk .mi{transform:none!important}}';
+  /* 제목 한 줄: .mk가 가리개, .mi가 아래에서 올라온다 */
+  function mk(cls, inner) { return '<span class="' + cls + ' mk hs"><span class="mi">' + inner + '</span></span>'; }
+  function motionOn(root) {
+    var on = function (el) { el.classList.add('on'); };
+    var hero = root.querySelectorAll('.hs'), rest = root.querySelectorAll('.rv:not(.hs)');
+    var live = window.self === window.top && window.IntersectionObserver && window.matchMedia('(prefers-reduced-motion:no-preference)').matches;
+    if (!live) { [].forEach.call(hero, on); [].forEach.call(rest, on); return null; }
+    /* 첫 화면은 제목 글꼴이 온 뒤에 시작한다(늦어도 1.5초). 시작 전에 글꼴이 바뀌어 튀지 않게 */
+    var started = false, go = function () { if (started) return; started = true; requestAnimationFrame(function () { [].forEach.call(hero, on); }); };
+    var load = function () { if (document.fonts && document.fonts.load) document.fonts.load('400 40px adobe-garamond-pro').then(go, go); else go(); };
+    var link = document.getElementById('vdvia-font-garamond');
+    setTimeout(go, 1500);
+    if (link && !link.sheet) link.addEventListener('load', load, { once: true }); else load();
+    /* 나머지는 윗선이 화면 85%에 닿으면 한 번만. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
+    var io = new IntersectionObserver(function (es) {
+      var n = 0;
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        if (e.target.classList.contains('rs')) e.target.style.setProperty('--rv-d', (100 + 100 * n++) + 'ms');
+        on(e.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+    [].forEach.call(rest, function (el) { io.observe(el); });
+    return io;
+  }
+
   var CSS = [
     ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
     '*{box-sizing:border-box;margin:0;padding:0}',
@@ -157,15 +191,16 @@
     '.send{width:100%}', /* 모바일은 칸들과 같은 전체 폭(2026-11-06 Sol) */
     '.gap{height:120px}',
     '}',
-    ZOOM
+    ZOOM,
+    MOTION_CSS
   ].join('\n');
 
   function html(D) {
     var F = D.form;
     var field = function (cls, id, label, input) { return '<div class="field ' + cls + '"><label class="flabel t13" for="' + id + '">' + esc(label) + '</label>' + input + '<div class="fline" aria-hidden="true"></div></div>'; };
     return '<style>' + CSS + '</style><div lang="en">' +
-      '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif"><span class="l1">' + esc(D.hero[0]) + '</span> <span class="l2">' + esc(D.hero[1]) + '</span></h1></div></section>' +
-      '<section class="contact"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
+      '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif">' + mk('l1 d6', esc(D.hero[0])) + ' ' + mk('l2 d8', esc(D.hero[1])) + '</h1></div></section>' +
+      '<section class="contact rv"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
       '<div class="two"><div class="info"><p class="lead">' + br(D.lead) + '</p><p class="t16 intro">' + br(D.body) + '</p><div class="rule r1" role="presentation"></div>' +
       '<dl class="rows">' + D.rows.map(function (r) { return '<dt class="t13">' + esc(r[0]) + '</dt><dd class="t16">' + (r[2] ? '<a href="' + esc(r[2]) + '">' + nw(r[1]) + '</a>' : nw(r[1])) + '</dd>'; }).join('') + '</dl>' +
       '<div class="rule r2" role="presentation"></div></div>' +
@@ -187,11 +222,12 @@
       injectFonts();
       if (this.shadowRoot.firstChild) return;
       this.shadowRoot.innerHTML = html(DATA);
+      this._mo = motionOn(this.shadowRoot);
       var self = this, form = this.shadowRoot.querySelector('form');
       form.addEventListener('submit', function (e) { e.preventDefault(); self._submit(); });
       form.addEventListener('input', function (e) { var f = e.target.closest('.field'); if (f && f.classList.contains('bad')) { f.classList.remove('bad'); e.target.removeAttribute('aria-invalid'); e.target.removeAttribute('aria-describedby'); } if (self._sent) { self._sent = false; self._say(''); } });
     }
-    disconnectedCallback() { fitOff(); }
+    disconnectedCallback() { fitOff(); if (this._mo) this._mo.disconnect(); }
     attributeChangedCallback(name, oldV, v) { if (name === 'status' && this.shadowRoot.firstChild) this._result(v); }
     _say(text, err) { var s = this.shadowRoot.querySelector('.status'); s.textContent = text || ''; s.classList.toggle('err', !!err); }
     _submit() {

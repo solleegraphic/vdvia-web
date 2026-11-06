@@ -118,6 +118,40 @@
   /* 390보다 좁으면 390 화면을 그대로 줄인다. 윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다 */
   var ZOOM = '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}';
 
+  /* 등장 애니메이션(구다이 글로벌 기준, 2026-11-06). 움직임 줄이기 설정, 에디터 미리보기(iframe)에서는 전부 바로 보인다. */
+  var RV_EASE = 'cubic-bezier(.215,.61,.355,1)'; /* GSAP power2.out */
+  var MOTION_CSS = '.mk,.mi{display:block}@media (prefers-reduced-motion:no-preference){' +
+    '.rv{opacity:0;transition:opacity .8s ' + RV_EASE + ' var(--rv-d,0ms)}.rv.on{opacity:1}' +
+    '.mk{clip-path:inset(-.12em -1em -.24em -1em)}.mk .mi{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.mk.on .mi{transform:none}' +
+    '.d2{--rv-d:200ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
+    '}@media print{.rv{opacity:1!important}.mk .mi{transform:none!important}}';
+  /* 제목 한 줄: .mk가 가리개, .mi가 아래에서 올라온다 */
+  function mk(cls, inner) { return '<span class="' + cls + ' mk hs"><span class="mi">' + inner + '</span></span>'; }
+  function motionOn(root) {
+    var on = function (el) { el.classList.add('on'); };
+    var hero = root.querySelectorAll('.hs'), rest = root.querySelectorAll('.rv:not(.hs)');
+    var live = window.self === window.top && window.IntersectionObserver && window.matchMedia('(prefers-reduced-motion:no-preference)').matches;
+    if (!live) { [].forEach.call(hero, on); [].forEach.call(rest, on); return null; }
+    /* 첫 화면은 제목 글꼴이 온 뒤에 시작한다(늦어도 1.5초). 시작 전에 글꼴이 바뀌어 튀지 않게 */
+    var started = false, go = function () { if (started) return; started = true; requestAnimationFrame(function () { [].forEach.call(hero, on); }); };
+    var load = function () { if (document.fonts && document.fonts.load) document.fonts.load('400 40px adobe-garamond-pro').then(go, go); else go(); };
+    var link = document.getElementById('vdvia-font-garamond');
+    setTimeout(go, 1500);
+    if (link && !link.sheet) link.addEventListener('load', load, { once: true }); else load();
+    /* 나머지는 윗선이 화면 85%에 닿으면 한 번만. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
+    var io = new IntersectionObserver(function (es) {
+      var n = 0;
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        if (e.target.classList.contains('rs')) e.target.style.setProperty('--rv-d', (100 + 100 * n++) + 'ms');
+        on(e.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+    [].forEach.call(rest, function (el) { io.observe(el); });
+    return io;
+  }
+
   var CSS = [
     ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
     '*{box-sizing:border-box;margin:0;padding:0}',
@@ -215,29 +249,30 @@
     '.svr{display:none}',
     '.scell{min-height:0;padding:24px 0 32px;border-bottom:1px solid #141414}',
     '}',
-    ZOOM
+    ZOOM,
+    MOTION_CSS
   ].join('\n');
 
   function html(D, base) {
     var mv = function (cls, M) {
-      return '<section id="' + cls + '" class="mv ' + cls + '"><div class="in"><p class="lab">' + esc(M.label) + '</p>' +
+      return '<section id="' + cls + '" class="mv ' + cls + ' rv"><div class="in"><p class="lab">' + esc(M.label) + '</p>' +
         '<div class="cols rules"><div class="rule"></div><div class="rule"></div></div>' +
         '<div class="cols"><h2 class="disp serif">' + lines(M.display) + '</h2><div class="r"><p class="t23">' + lines(M.lead) + '</p><p class="t16 helv">' + lines(M.body) + '</p></div></div></div></section>';
     };
     var C = D.core, S = D.structure, A = D.about;
-    return '<style>' + CSS + 'section[id]{scroll-margin-top:40px}</style>' +
-      '<section class="hero"><div class="in"><p class="hlead t23">' + lines(D.heroLead) + '</p>' +
-      '<h1 class="ht serif"><span class="l1">' + esc(D.heroTitle[0]) + '</span><span class="l2">' + esc(D.heroTitle[1]) + '</span></h1></div></section>' +
-      '<section class="about"><div class="in"><div class="rule"></div><div class="ab-grid">' +
+    return '<style>' + CSS + 'section[id]{scroll-margin-top:88px}</style>' +
+      '<section class="hero"><div class="in"><p class="hlead t23 rv hs">' + lines(D.heroLead) + '</p>' +
+      '<h1 class="ht serif">' + mk('l1 d6', esc(D.heroTitle[0])) + mk('l2 d8', esc(D.heroTitle[1])) + '</h1></div></section>' +
+      '<section class="about rv"><div class="in"><div class="rule"></div><div class="ab-grid">' +
       '<div class="ab-left"><figure class="ab-img"><img src="' + esc(base + 'about.jpg') + '" width="612" height="390" alt="World map with network connections" loading="eager"></figure><p class="ab-under t16">' + lines(A.under) + '</p></div>' +
       '<p class="ab-cap">' + esc(A.caption) + '</p><div class="ab-vr" role="presentation"></div>' +
       '<div class="ab-txt"><p class="ab-head">' + lines(A.head) + '</p><p class="ab-body t16 helv">' + lines(A.body) + '</p></div></div></div></section>' +
       '<div class="gap53" aria-hidden="true"></div>' + mv('mission', D.mission) + '<div class="gap280" aria-hidden="true"></div>' + mv('vision', D.vision) + '<div class="gap280" aria-hidden="true"></div>' +
-      '<section id="core-value" class="core"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<section id="core-value" class="core rv"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
       '<div class="head2"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
       '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap280" aria-hidden="true"></div>' +
-      '<section id="structure" class="st"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<section id="structure" class="st rv"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
       '<div class="head2"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
       '<div class="scells" role="list"><i class="svr" aria-hidden="true" style="left:33.3333%"></i><i class="svr" aria-hidden="true" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="' + esc(c[3]) + '" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap180" aria-hidden="true"></div>';
@@ -249,9 +284,9 @@
     static get observedAttributes() { return ['img-base']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
     connectedCallback() { fitOn(this); injectFonts(); this._render(); this._bindHash(); }
-    disconnectedCallback() { fitOff(); window.removeEventListener('hashchange', this._onHash); }
+    disconnectedCallback() { fitOff(); window.removeEventListener('hashchange', this._onHash); if (this._mo) this._mo.disconnect(); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
-    _render() { this.shadowRoot.innerHTML = html(DATA, this.getAttribute('img-base') || IMG_BASE); }
+    _render() { this.shadowRoot.innerHTML = html(DATA, this.getAttribute('img-base') || IMG_BASE); if (this._mo) this._mo.disconnect(); this._mo = motionOn(this.shadowRoot); }
     // 섀도 안 섹션은 브라우저 기본 앵커 이동이 닿지 않아 직접 스크롤한다.
     goTo(id, smooth) {
       var t = SECTIONS.test(id) && this.shadowRoot.getElementById(id);

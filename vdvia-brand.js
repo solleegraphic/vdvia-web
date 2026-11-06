@@ -72,6 +72,40 @@
   /* 390보다 좁으면 390 화면을 그대로 줄인다. 윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다 */
   var ZOOM = '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}';
 
+  /* 등장 애니메이션(구다이 글로벌 기준, 2026-11-06). 움직임 줄이기 설정, 에디터 미리보기(iframe)에서는 전부 바로 보인다. */
+  var RV_EASE = 'cubic-bezier(.215,.61,.355,1)'; /* GSAP power2.out */
+  var MOTION_CSS = '.mk,.mi{display:block}@media (prefers-reduced-motion:no-preference){' +
+    '.rv{opacity:0;transition:opacity .8s ' + RV_EASE + ' var(--rv-d,0ms)}.rv.on{opacity:1}' +
+    '.mk{clip-path:inset(-.12em -1em -.24em -1em)}.mk .mi{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.mk.on .mi{transform:none}' +
+    '.d2{--rv-d:200ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
+    '}@media print{.rv{opacity:1!important}.mk .mi{transform:none!important}}';
+  /* 제목 한 줄: .mk가 가리개, .mi가 아래에서 올라온다 */
+  function mk(cls, inner) { return '<span class="' + cls + ' mk hs"><span class="mi">' + inner + '</span></span>'; }
+  function motionOn(root) {
+    var on = function (el) { el.classList.add('on'); };
+    var hero = root.querySelectorAll('.hs'), rest = root.querySelectorAll('.rv:not(.hs)');
+    var live = window.self === window.top && window.IntersectionObserver && window.matchMedia('(prefers-reduced-motion:no-preference)').matches;
+    if (!live) { [].forEach.call(hero, on); [].forEach.call(rest, on); return null; }
+    /* 첫 화면은 제목 글꼴이 온 뒤에 시작한다(늦어도 1.5초). 시작 전에 글꼴이 바뀌어 튀지 않게 */
+    var started = false, go = function () { if (started) return; started = true; requestAnimationFrame(function () { [].forEach.call(hero, on); }); };
+    var load = function () { if (document.fonts && document.fonts.load) document.fonts.load('400 40px adobe-garamond-pro').then(go, go); else go(); };
+    var link = document.getElementById('vdvia-font-garamond');
+    setTimeout(go, 1500);
+    if (link && !link.sheet) link.addEventListener('load', load, { once: true }); else load();
+    /* 나머지는 윗선이 화면 85%에 닿으면 한 번만. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
+    var io = new IntersectionObserver(function (es) {
+      var n = 0;
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        if (e.target.classList.contains('rs')) e.target.style.setProperty('--rv-d', (100 + 100 * n++) + 'ms');
+        on(e.target);
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+    [].forEach.call(rest, function (el) { io.observe(el); });
+    return io;
+  }
+
   var CSS = [
     ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
     '*{box-sizing:border-box;margin:0;padding:0}',
@@ -124,18 +158,19 @@
     '.txt{margin-top:20px}',
     '.gap180{height:120px}',
     '}',
-    ZOOM
+    ZOOM,
+    MOTION_CSS
   ].join('\n');
 
   function html(D, base) {
     return '<style>' + CSS + '</style>' +
       '<div class="gap116" aria-hidden="true"></div>' +
       '<section class="brands" lang="en" aria-labelledby="vb-title"><div class="in">' +
-      '<p class="lab">' + esc(D.label) + '</p>' +
-      '<div class="g3 rules" role="presentation"><div class="rule"></div><div class="rule"></div></div>' +
-      '<div class="g3 top"><h1 class="disp serif" id="vb-title">' + lines(D.title) + '</h1><div class="r"><p class="t23">' + lines(D.lead) + '</p><p class="helv">' + lines(D.body) + '</p></div></div>' +
+      '<p class="lab rv hs">' + esc(D.label) + '</p>' +
+      '<div class="g3 rules rv hs" role="presentation"><div class="rule"></div><div class="rule"></div></div>' +
+      '<div class="g3 top"><h1 class="disp serif" id="vb-title">' + D.title.split(/\u2028|\n/).map(function (t, i) { return mk(i ? 'd8' : 'd6', esc(t.trim())); }).join(' ') + '</h1><div class="r rv hs d2"><p class="t23">' + lines(D.lead) + '</p><p class="helv">' + lines(D.body) + '</p></div></div>' +
       '<ul class="g3 list" role="list">' + D.brands.map(function (b, i) {
-        return '<li class="brand b' + (i + 1) + '"><h2 class="bname"><img class="logo" src="' + esc(base + b.logo) + '" width="' + b.logoW + '" height="' + b.logoH + '" alt="' + esc(b.name) + '"></h2>' +
+        return '<li class="brand b' + (i + 1) + ' rv"><h2 class="bname"><img class="logo" src="' + esc(base + b.logo) + '" width="' + b.logoW + '" height="' + b.logoH + '" alt="' + esc(b.name) + '"></h2>' +
           '<div class="rule" role="presentation"></div>' +
           '<img class="photo" src="' + esc(base + b.photo) + '" width="' + b.photoW + '" height="' + b.photoH + '" alt="' + esc(b.alt) + '" loading="lazy">' +
           '<div class="txt"><p class="t16">' + lines(b.lead) + '</p><p class="helv">' + lines(b.body) + '</p></div></li>';
@@ -148,9 +183,9 @@
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
     static get observedAttributes() { return ['img-base']; }
     connectedCallback() { fitOn(this); injectFonts(); this._render(); }
-    disconnectedCallback() { fitOff(); }
+    disconnectedCallback() { fitOff(); if (this._mo) this._mo.disconnect(); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
-    _render() { this.shadowRoot.innerHTML = html(DATA, (this.getAttribute('img-base') || IMG_BASE).replace(/\/?$/, '/')); } /* 끝 슬래시가 없어도 되게 */
+    _render() { this.shadowRoot.innerHTML = html(DATA, (this.getAttribute('img-base') || IMG_BASE).replace(/\/?$/, '/')); if (this._mo) this._mo.disconnect(); this._mo = motionOn(this.shadowRoot); } /* 끝 슬래시가 없어도 되게 */
   }
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)

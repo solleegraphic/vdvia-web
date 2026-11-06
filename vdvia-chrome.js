@@ -75,8 +75,10 @@
 
   // ======================= 헤더 =======================
   var HEADER_CSS = BASE_CSS + '\n' + [
-    ':host{background:#fff;color:#141414}',
-    '.hd{height:64px;background:#fff}',
+    ':host{background:#fff;color:#141414;height:64px}', /* 헤더가 고정이라 이 높이가 자리를 잡는다 */
+    '.hd{height:64px;background:#fff;position:fixed;left:0;right:0;top:0;z-index:50;transition:transform .2s ease-out}',
+    '.hd.is-hidden{transform:translateY(-100%)}.hd:has(:focus-visible){transform:none}', /* 내리면 숨고 올리면 나온다(구다이 기준). 키보드로 들어오면 보인다 */
+    '@media (prefers-reduced-motion:reduce){.hd{transition:none}}',
     '.hd .in{height:64px;display:flex;align-items:center;justify-content:space-between;position:relative}',
     '.logo{display:block;width:110px;flex:none;color:#000;align-self:flex-start;margin-top:22px}.logo svg{display:block;width:100%;height:auto}', /* 세로 가운데가 아니라 VDVIA 글자를 메뉴 높이에 (y22 = 피그마) */
     '.nav{display:none}',
@@ -101,8 +103,8 @@
   class VdviaHeader extends HTMLElement {
     static get observedAttributes() { return ['links']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); this._open = false; }
-    connectedCallback() { fitHost(this); injectFonts(); this._render(); }
-    disconnectedCallback() { this._closeMenu(); }
+    connectedCallback() { fitHost(this); injectFonts(); this._render(); this._bindHide(); }
+    disconnectedCallback() { this._closeMenu(); window.removeEventListener('scroll', this._onHide); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
     _render() {
       var L = readLinks(this), self = this;
@@ -113,6 +115,20 @@
         '<button class="menu" type="button" aria-label="Menu" aria-expanded="false"><i></i><i></i></button></div></header>';
       this.shadowRoot.querySelector('.menu').addEventListener('click', function () { self._openMenu(); });
     }
+    _bindHide() {
+      var self = this, last = window.scrollY;
+      if (this._onHide) window.removeEventListener('scroll', this._onHide);
+      this._onHide = function () {
+        var y = window.scrollY, hd = self.shadowRoot.querySelector('.hd');
+        if (!hd || self._open) { last = y; return; }
+        if (y <= hd.offsetHeight) { hd.classList.remove('is-hidden'); last = y; return; }
+        if (y + window.innerHeight >= document.documentElement.scrollHeight - 2) { last = y; return; } /* 맨 아래 튕김에 반응하지 않는다 */
+        if (Math.abs(y - last) < 5) return; /* 5px 미만은 무시 */
+        hd.classList.toggle('is-hidden', y > last);
+        last = y;
+      };
+      window.addEventListener('scroll', this._onHide, { passive: true });
+    }
     _openMenu() {
       if (this._open) return;
       var L = readLinks(this), self = this;
@@ -122,7 +138,7 @@
         '<nav aria-label="Main">' + NAV.map(function (n) { return '<a href="' + esc(L[n[1]]) + '">' + esc(n[0]) + '</a>'; }).join('') + '</nav>';
       document.body.appendChild(d);
       this._mnav = d; this._open = true;
-      this._prevOverflow = document.documentElement.style.overflow; document.documentElement.style.overflow = 'hidden';
+      this._prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; /* html에 걸면 윅스에서 스크롤이 맨 위로 간다 */
       d.querySelector('.x').addEventListener('click', function () { self._closeMenu(); });
       this._mq = window.matchMedia('(min-width:1024px)'); this._mqCb = function (e) { if (e.matches) self._closeMenu(); }; this._mq.addEventListener('change', this._mqCb); /* 창을 넓히면 메뉴를 닫는다 */
       this._onKey = function (e) { /* 열린 동안 Tab은 메뉴 안에서만 돈다 */
@@ -138,7 +154,7 @@
     _closeMenu() {
       if (!this._open) return;
       if (this._mnav && this._mnav.parentNode) this._mnav.parentNode.removeChild(this._mnav);
-      document.documentElement.style.overflow = this._prevOverflow || '';
+      document.body.style.overflow = this._prevOverflow || '';
       document.removeEventListener('keydown', this._onKey);
       if (this._mq) this._mq.removeEventListener('change', this._mqCb);
       this._open = false; this._mnav = null;
@@ -147,9 +163,13 @@
   }
 
   // ======================= 푸터 =======================
+  /* 푸터 뒤판(구다이 기준, 2026-11-06): 넓은 화면에서 본문 뒤에 고정돼 있다가 본문이 올라가며 드러나고, 내용은 스크롤만큼 밝아진다. 창이 낮으면 아래쪽만 보여 위 내용에 못 가므로 끈다 */
+  var REVEAL_MQ = 'screen and (min-width:1281px) and (min-height:720px) and (prefers-reduced-motion:no-preference)';
+  var REVEAL_PAGE_CSS = '@media ' + REVEAL_MQ + '{#PAGES_CONTAINER{position:relative;z-index:1;background:#fff}#SITE_FOOTER{position:relative;z-index:0}}';
   var FOOTER_CSS = BASE_CSS + '\n' + [
     ':host{background:#000;color:#fff}',
     '.ft{background:#000;color:#fff}',
+    '@media ' + REVEAL_MQ + '{:host{height:680px}.ft.is-fixed{position:fixed;left:0;right:0;bottom:0;z-index:1}}',
     /* 모바일 (figma_home_build.js footerMob: 40/24 패딩, 행 16/16 + 룰 #2a2a2a, 40, ©, 16, 정보 13/22, 10, 개인정보, 40, 셀렉트, 60, 락업) */
     '.f-in{padding:40px 24px}',
     '@media (min-width:768px){.f-in{padding:40px 32px}}',
@@ -186,8 +206,37 @@
   class VdviaFooter extends HTMLElement {
     static get observedAttributes() { return ['links']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
-    connectedCallback() { fitHost(this); injectFonts(); this._render(); }
-    disconnectedCallback() { if (this._onDoc) document.removeEventListener('click', this._onDoc); }
+    connectedCallback() { fitHost(this); injectFonts(); this._render(); this._bindReveal(); }
+    disconnectedCallback() {
+      if (this._onDoc) document.removeEventListener('click', this._onDoc);
+      if (this._onReveal) { window.removeEventListener('scroll', this._onReveal); window.removeEventListener('resize', this._onReveal); this._revealMq.removeEventListener('change', this._onReveal); }
+    }
+    _bindReveal() {
+      var self = this, mq = window.matchMedia(REVEAL_MQ), raf = 0;
+      if (!document.getElementById('vdvia-reveal-style')) { var st = document.createElement('style'); st.id = 'vdvia-reveal-style'; st.textContent = REVEAL_PAGE_CSS; document.head.appendChild(st); }
+      var update = function () {
+        raf = 0;
+        var root = self.shadowRoot, ft = root.querySelector('.ft'), box = root.querySelector('.f-in');
+        if (!ft || !box) return;
+        if (!mq.matches) { ft.classList.remove('is-fixed'); box.style.opacity = ''; box.style.pointerEvents = ''; return; }
+        var q = self.getBoundingClientRect(), seen = window.innerHeight - q.top;
+        var p = Math.max(0, Math.min(1, seen / (q.height * 0.8))), o = p <= 0.125 ? 0 : (p - 0.125) / 0.875; /* 푸터 높이의 80%가 드러나는 동안 0에서 1로 */
+        ft.classList.toggle('is-fixed', seen > 0);
+        box.style.opacity = o; box.style.pointerEvents = o > 0.2 ? '' : 'none';
+      };
+      if (this._onReveal) { window.removeEventListener('scroll', this._onReveal); window.removeEventListener('resize', this._onReveal); this._revealMq.removeEventListener('change', this._onReveal); }
+      this._onReveal = function () { if (!raf) raf = requestAnimationFrame(update); };
+      this._revealMq = mq;
+      window.addEventListener('scroll', this._onReveal, { passive: true });
+      window.addEventListener('resize', this._onReveal);
+      mq.addEventListener('change', this._onReveal);
+      update();
+      /* 키보드로 푸터에 들어오면 본문 뒤에 가려지지 않게 끝까지 내린다 */
+      if (!this._revealFocus) {
+        this._revealFocus = true;
+        this.shadowRoot.addEventListener('focusin', function (e) { if (mq.matches && e.target.matches && e.target.matches(':focus-visible')) window.scrollTo(0, document.documentElement.scrollHeight); });
+      }
+    }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
     _render() {
       var L = readLinks(this), F = FOOTER, self = this;
