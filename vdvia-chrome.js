@@ -4,7 +4,8 @@
  *       세로 위치는 Sol 조정본(Home EN 수정_3 1209:2278) x128 y22: 락업 윗선 = 메뉴 글줄 윗선(22), VDVIA 글자가 메뉴와 같은 높이, 태그라인은 그 아래.
  *       메뉴(2026-11-05, Sol "메뉴부터 통일"): 수정_3 헤더 Nav 1209:2303 = Company, Brand, What is Different, News, Contact (간격 50, 가운데),
  *       푸터 1209:2405 = 열 5개 x 470+168n 170폭, 회사 정보 콜론 앞 띄어쓰기 없음.
- *       모바일(≤1280)은 ../_build/figma_home_build.js 의 header()/footerMob() 390 스펙.
+ *       폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1024 이상 = 데스크톱 메뉴와 5열 푸터(1281 이상 컨테이너 1184, 1024~1280 좌우 48), 1023 이하 = 메뉴 버튼과 접는 푸터(768~1023 좌우 32, 767 이하 좌우 24).
+ *       로고는 어느 폭이나 110. 390보다 좁으면 zoom으로 390 화면을 그대로 줄인다(윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다).
  * 링크 규칙(Sol 2026-11-04): 로고 = Company = 홈(/). 나머지는 vdvia.com 기존 페이지 주소.
  * 빌드 도구 없음, 바닐라 ES2017, 외부 의존성은 Pretendard Variable CDN 하나.
  * 윅스: 헤더/푸터 컨테이너에 Custom Element(Server URL = 이 파일) 를 넣고 태그 이름을 vdvia-header / vdvia-footer 로.
@@ -51,6 +52,8 @@
       var l = document.createElement('link'); l.id = f[0]; l.rel = 'stylesheet'; l.href = f[1]; document.head.appendChild(l);
     });
   }
+  /* 윅스 맞춤: 에디터 높이를 host 최소 높이로 거는 것을 풀고, 모바일이 거는 width:320px(zoom에 같이 줄어든다)를 전체 폭으로 바꾼다. 모바일은 감싸는 칸이 내용 폭으로 줄어들어 그 칸도 전체 폭으로 */
+  function fitHost(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); }
   function readLinks(el) {
     var o = {}, k; for (k in LINKS) o[k] = LINKS[k];
     var raw = el.getAttribute('links'); if (raw) { try { var j = JSON.parse(raw); for (k in j) o[k] = j[k]; } catch (e) {} }
@@ -62,7 +65,12 @@
     'a{color:inherit;text-decoration:none}ul{list-style:none}button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:0;cursor:pointer;text-align:left}',
     'a:focus-visible,button:focus-visible{outline:1px solid currentColor;outline-offset:3px}',
     '.in{padding:0 24px}',
-    '@media (min-width:1281px){.in{max-width:1184px;margin:0 auto;padding:0}}'
+    '@media (min-width:768px){.in{padding:0 32px}}',
+    '@media (min-width:1024px){.in{padding:0 48px}}',
+    '@media (min-width:1281px){.in{max-width:1184px;margin:0 auto;padding:0}}',
+    /* 옛 페이지는 윅스가 980으로 고정하므로 헤더, 푸터라도 창 폭에 맞춘다(새 페이지는 페이지 컴포넌트가 고정을 푼다) */
+    '@media (min-width:390px) and (max-width:979.98px){:host{max-width:100vw}}',
+    '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}'
   ].join('\n');
 
   // ======================= 헤더 =======================
@@ -70,11 +78,10 @@
     ':host{background:#fff;color:#141414}',
     '.hd{height:64px;background:#fff}',
     '.hd .in{height:64px;display:flex;align-items:center;justify-content:space-between;position:relative}',
-    '.logo{display:block;width:96px;flex:none;color:#000;align-self:flex-start;margin-top:24px}.logo svg{display:block;width:100%;height:auto}', /* 세로 가운데가 아니라 VDVIA 글자를 메뉴 버튼 높이에 (모바일 24, 1440 22 = 피그마) */
+    '.logo{display:block;width:110px;flex:none;color:#000;align-self:flex-start;margin-top:22px}.logo svg{display:block;width:100%;height:auto}', /* 세로 가운데가 아니라 VDVIA 글자를 메뉴 높이에 (y22 = 피그마) */
     '.nav{display:none}',
     '.menu{width:22px;height:11px;position:relative;flex:none;padding:0}.menu i{position:absolute;left:0;top:0;width:22px;height:1.5px;background:#141414}.menu i+i{top:9.5px}',
-    '@media (min-width:1281px){',
-    '.logo{width:110px;margin-top:22px}',
+    '@media (min-width:1024px){',
     '.nav{display:flex;gap:50px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;line-height:20px;font-weight:600;white-space:nowrap}',
     '.nav a:hover{opacity:.6}',
     '.menu{display:none}',
@@ -84,15 +91,17 @@
   var MNAV_CSS = '#vdvia-mnav{position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;background:#fff;color:#141414;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;overflow:auto}' +
     '#vdvia-mnav *{box-sizing:border-box;margin:0;padding:0}#vdvia-mnav a{color:inherit;text-decoration:none}#vdvia-mnav ul{list-style:none}' +
     '#vdvia-mnav .bar{height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between}' +
-    '#vdvia-mnav .logo{display:block;width:96px;color:#000;align-self:flex-start;margin-top:24px}#vdvia-mnav .logo svg{display:block;width:100%;height:auto}' +
+    '#vdvia-mnav .logo{display:block;width:110px;color:#000;align-self:flex-start;margin-top:22px}#vdvia-mnav .logo svg{display:block;width:100%;height:auto}' +
     '#vdvia-mnav .x{width:22px;height:22px;position:relative;background:none;border:0;cursor:pointer;padding:0}#vdvia-mnav .x i{position:absolute;left:0;top:10px;width:22px;height:1.5px;background:#141414;transform:rotate(45deg)}#vdvia-mnav .x i+i{transform:rotate(-45deg)}' +
     '#vdvia-mnav nav{padding:24px 24px 40px}#vdvia-mnav nav a{display:block;padding:14px 0;font-size:22px;line-height:32px;font-weight:600;border-bottom:1px solid #e9e9e9}' +
-    '#vdvia-mnav nav a:first-child{border-top:1px solid #141414}';
+    '#vdvia-mnav nav a:first-child{border-top:1px solid #141414}' +
+    '@media (min-width:768px){#vdvia-mnav .bar,#vdvia-mnav nav{padding-left:32px;padding-right:32px}}@media (min-width:1024px){#vdvia-mnav{display:none}}' +
+    '@media (max-width:389.98px){#vdvia-mnav{zoom:.96154}}@media (max-width:374.98px){#vdvia-mnav{zoom:.92308}}@media (max-width:359.98px){#vdvia-mnav{zoom:.82051}}';
 
   class VdviaHeader extends HTMLElement {
     static get observedAttributes() { return ['links']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); this._open = false; }
-    connectedCallback() { injectFonts(); this._render(); }
+    connectedCallback() { fitHost(this); injectFonts(); this._render(); }
     disconnectedCallback() { this._closeMenu(); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
     _render() {
@@ -108,14 +117,20 @@
       if (this._open) return;
       var L = readLinks(this), self = this;
       if (!document.getElementById('vdvia-mnav-style')) { var st = document.createElement('style'); st.id = 'vdvia-mnav-style'; st.textContent = MNAV_CSS; document.head.appendChild(st); }
-      var d = document.createElement('div'); d.id = 'vdvia-mnav'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Menu');
+      var d = document.createElement('div'); d.id = 'vdvia-mnav'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Menu');
       d.innerHTML = '<div class="bar"><a class="logo" href="' + esc(L.home) + '" aria-label="VDVIA Home">' + lockup('lk') + '</a><button class="x" type="button" aria-label="Close"><i></i><i></i></button></div>' +
         '<nav aria-label="Main">' + NAV.map(function (n) { return '<a href="' + esc(L[n[1]]) + '">' + esc(n[0]) + '</a>'; }).join('') + '</nav>';
       document.body.appendChild(d);
       this._mnav = d; this._open = true;
       this._prevOverflow = document.documentElement.style.overflow; document.documentElement.style.overflow = 'hidden';
       d.querySelector('.x').addEventListener('click', function () { self._closeMenu(); });
-      this._onKey = function (e) { if (e.key === 'Escape') self._closeMenu(); };
+      this._mq = window.matchMedia('(min-width:1024px)'); this._mqCb = function (e) { if (e.matches) self._closeMenu(); }; this._mq.addEventListener('change', this._mqCb); /* 창을 넓히면 메뉴를 닫는다 */
+      this._onKey = function (e) { /* 열린 동안 Tab은 메뉴 안에서만 돈다 */
+        if (e.key === 'Escape') { self._closeMenu(); return; }
+        if (e.key !== 'Tab') return;
+        var f = d.querySelectorAll('a,button'), first = f[0], last = f[f.length - 1], cur = document.activeElement;
+        if (e.shiftKey ? cur === first : cur === last) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      };
       document.addEventListener('keydown', this._onKey);
       this.shadowRoot.querySelector('.menu').setAttribute('aria-expanded', 'true');
       d.querySelector('.x').focus();
@@ -125,6 +140,7 @@
       if (this._mnav && this._mnav.parentNode) this._mnav.parentNode.removeChild(this._mnav);
       document.documentElement.style.overflow = this._prevOverflow || '';
       document.removeEventListener('keydown', this._onKey);
+      if (this._mq) this._mq.removeEventListener('change', this._mqCb);
       this._open = false; this._mnav = null;
       var b = this.shadowRoot.querySelector('.menu'); if (b) { b.setAttribute('aria-expanded', 'false'); b.focus(); }
     }
@@ -136,6 +152,7 @@
     '.ft{background:#000;color:#fff}',
     /* 모바일 (figma_home_build.js footerMob: 40/24 패딩, 행 16/16 + 룰 #2a2a2a, 40, ©, 16, 정보 13/22, 10, 개인정보, 40, 셀렉트, 60, 락업) */
     '.f-in{padding:40px 24px}',
+    '@media (min-width:768px){.f-in{padding:40px 32px}}',
     '.fh{display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-size:14px;line-height:20px;color:#fff;border-bottom:1px solid #2a2a2a}',
     '.fh a{flex:1}.fh .sg{flex:none;width:24px;height:20px;line-height:20px;text-align:right;font-size:14px;color:#fff;padding:0}',
     '.fc ul{display:none;padding:8px 0 12px;border-bottom:1px solid #2a2a2a}.fc.open ul{display:block}.fc li a,.fc li .tx{display:block;font-size:14px;line-height:24px;color:#ccc;padding:2px 0}',
@@ -148,8 +165,8 @@
     '.fam-list{display:none;position:absolute;left:0;top:40px;width:180px;background:#000;border:1px solid #3a3a3a;border-top:0;z-index:5}.fam.open .fam-list{display:block}',
     '.fam-list a{display:block;padding:8px 12px;font-size:14px;line-height:24px;color:#ccc}.fam-list a:hover{color:#fff;background:#141414}',
     '.lockup{display:block;width:100%;max-width:592px;margin:60px auto 0;color:#fff}.lockup svg{display:block;width:100%;height:auto}',
-    /* 데스크톱 (Figma 수정_3 1209:2405: 680 높이, © 128/30, 정보 250폭 69, 개인정보 223, 셀렉트 279 180×40, 열 5개 x 470+168n 170폭(2px 겹침), 락업 592 가운데 하단 60) */
-    '@media (min-width:1281px){',
+    /* 데스크톱 (Figma 수정_3 1209:2405: 680 높이, © 128/30, 정보 250폭 69, 개인정보 223, 셀렉트 279 180×40, 열 5개 x 470+168n 170폭(2px 겹침), 락업 592 가운데 하단 60). 1024~1280은 아래에서 좌우 48, 열은 남은 폭을 5등분 */
+    '@media (min-width:1024px){',
     '.f-in{position:relative;height:680px;padding:0}',
     '.f-left{position:absolute;left:0;top:30px;width:250px}',
     '.f-copy{margin-top:0}',
@@ -161,13 +178,15 @@
     '.fh{display:block;padding:0;border:0;font-size:14px;line-height:18px;color:#959595;margin-bottom:19px}.fh .sg{display:none}',
     '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a,.fc li .tx{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
     '.lockup{position:absolute;left:50%;bottom:60px;width:592px;margin:0;transform:translateX(-50%)}',
-    '}'
+    '}',
+    '@media (max-width:1280.98px){.nb{white-space:nowrap}}', /* 1281 이상은 피그마 줄 그대로, 그 아래는 사업자번호를 하이픈에서 끊지 않는다 */
+    '@media (min-width:1024px) and (max-width:1280.98px){.f-in{margin:0 48px}.f-cols{left:28.9%;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));column-gap:12px}.fc{width:auto}.fc+.fc{margin-left:0}}'
   ].join('\n');
 
   class VdviaFooter extends HTMLElement {
     static get observedAttributes() { return ['links']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
-    connectedCallback() { injectFonts(); this._render(); }
+    connectedCallback() { fitHost(this); injectFonts(); this._render(); }
     disconnectedCallback() { if (this._onDoc) document.removeEventListener('click', this._onDoc); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
     _render() {
@@ -179,11 +198,11 @@
           (has ? '<ul>' + c[2].map(function (s) { return '<li>' + (L[s[1]] ? '<a href="' + esc(L[s[1]]) + '">' + esc(s[0]) + '</a>' : '<span class="tx">' + esc(s[0]) + '</span>') + '</li>'; }).join('') + '</ul>' : '') + '</div>';
       }).join('');
       var priv = L.privacy ? '<a class="f-priv" href="' + esc(L.privacy) + '">' + esc(F.privacy) + '</a>' : '<span class="f-priv">' + esc(F.privacy) + '</span>';
-      var fam = '<div class="fam"><button class="sel" type="button" aria-haspopup="true" aria-expanded="false"><span>' + esc(F.family) + '</span>' + CHEV + '</button>' +
-        '<div class="fam-list" role="menu">' + F.familySites.map(function (s) { return '<a role="menuitem" href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</div></div>';
+      var fam = '<div class="fam"><button class="sel" type="button" aria-expanded="false"><span>' + esc(F.family) + '</span>' + CHEV + '</button>' +
+        '<div class="fam-list">' + F.familySites.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</div></div>';
       this.shadowRoot.innerHTML = '<style>' + FOOTER_CSS + '</style>' +
         '<footer class="ft"><div class="in f-in"><div class="f-cols">' + cols + '</div>' +
-        '<div class="f-left"><p class="f-copy">' + esc(F.copy) + '</p><div class="f-info">' + F.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('') + '</div>' + priv + fam + '</div>' +
+        '<div class="f-left"><p class="f-copy">' + esc(F.copy) + '</p><div class="f-info">' + F.info.map(function (l) { return '<p>' + esc(l).replace(/\d+(?:-\d+)+/g, '<span class="nb">$&</span>') + '</p>'; }).join('') + '</div>' + priv + fam + '</div>' +
         '<a class="lockup" href="' + esc(L.home) + '" aria-label="VDVIA, a ZISHEL company">' + lockup('lk') + '</a></div></footer>';
       var root = this.shadowRoot;
       // 홈에서는 페이지를 다시 열지 않고 스크롤한다. 해시가 그대로여도(같은 항목을 또 눌러도) 움직인다.

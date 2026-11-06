@@ -5,7 +5,7 @@
  *   소개 167: 라벨 Difference 16/26 Bold, 룰(라벨 위에서 32), 리드 23/33 SemiBold 480폭 + 본문 16/26 592폭(x 720), 룰 아래 30
  *   여백 200 → 행 991: Three Differences 90px Garamond 86%(두 줄이라 줄 77, 피그마 정수 반올림) -1%, 제목 아래 191에 첫 룰,
  *   행 = 룰 → 55 → 번호 16/19 180폭 | 제목 23/33 SemiBold 478폭(x 332) | 설명 16/26 #555 478폭(x 834) → 55 → 룰, 끝 여백 180
- * 1281 이상: 컨테이너 1184 가운데. 769~1280: 같은 배치를 좌우 24 여백으로 비율 유지(그리드 fr).
+ * 폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1281 이상 컨테이너 1184 가운데(피그마 그대로). 1024~1280 좌우 48, 768~1023 좌우 32, 같은 배치에서 글자와 여백을 폭에 비례해 줄인다(fv()). 767 이하는 390 배치(좌우 24), 390보다 좁으면 zoom으로 그대로 줄인다(윅스 모바일 320 포함).
  * 768 이하(윅스 모바일 320 포함): News 모바일 규칙을 따른다. Three Differences는 320에서도 한 줄에 들어가게 폭 비례로 줄인다. 피그마에 모바일 보드가 없어 Claude가 정한 값.
  * 글 안 U+2028(피그마 Shift+Enter)은 1101 이상에서만 줄바꿈, 그 아래는 공백. 줄바꿈 문자(Enter)는 항상 줄바꿈.
  * 윅스: Custom Element, Server URL = 이 파일, Tag = vdvia-wid, 전체 폭. 폰트 링크는 document.head에 한 번만(다른 컴포넌트와 같은 id).
@@ -57,41 +57,52 @@
     });
   }
 
+  /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
+  function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
+  var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
+  function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
+  function fitOff() { window.__vdviaFit = Math.max(0, (window.__vdviaFit || 1) - 1); if (!window.__vdviaFit) { var st = document.getElementById('vdvia-fit'); if (st) st.parentNode.removeChild(st); } }
+  /* 390보다 좁으면 390 화면을 그대로 줄인다. 윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다 */
+  var ZOOM = '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}';
+
   var CSS = [
     ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
     '*{box-sizing:border-box;margin:0;padding:0}',
     '.in{max-width:1184px;margin:0 auto}',
     '.serif{font-family:' + SERIF + ';font-weight:400}',
     /* 히어로 */
-    '.hero{position:relative;height:440px}',
-    '.ht{position:absolute;left:0;top:264px;font-weight:400}',
+    '.hero{position:relative;height:' + fv(300, 440) + '}',
+    '.ht{position:absolute;left:0;top:' + fv(186, 264) + ';font-weight:400}',
     '.ht span{display:block;white-space:nowrap;letter-spacing:-0.02em}', /* 자간은 줄마다 자기 크기 기준 */
     /* 피그마는 둘째 줄 기준선을 첫 줄 기준선 + 94.04에 둔다(브라우저는 줄 상자를 쌓아 10px 위). 실측 보정: l1 -2, l2 +10 */
-    '.ht .l1{font-size:39.12px;line-height:39.12px;position:relative;top:var(--l1-dy,-2px)}',
-    '.ht .l2{font-size:94.04px;line-height:94.04px;position:relative;top:var(--l2-dy,10px)}',
+    '.ht .l1{font-size:' + fv(24, 39.12) + ';line-height:' + fv(24, 39.12) + ';position:relative;top:' + fv(-1, -2) + '}',
+    '.ht .l2{font-size:' + fv(56, 94.04) + ';line-height:' + fv(56, 94.04) + ';position:relative;top:' + fv(6, 10) + '}',
     /* 소개 */
     '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}', /* 기준선을 피그마에 맞춤(홈, Brand와 같은 보정) */
     '.rule{height:1px;background:#141414}',
     '.intro .rule{margin-top:6px}',
-    '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:30px}',
+    '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:' + fv(24, 30) + '}',
     /* Pretendard 실측 보정(피그마 대비): 23/33은 1px, 16/26은 2px 아래로. 배치에는 영향 없음 */
-    '.lead{grid-column:1;font-weight:600;font-size:23px;line-height:33px;position:relative;top:var(--t23-dy,1px)}',
+    '.lead{grid-column:1;font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:var(--t23-dy,1px)}',
     '.body{grid-column:3;font-size:16px;line-height:26px;position:relative;top:var(--t16-dy,2px)}',
-    '.gap1{height:200px}',
+    '.gap1{height:' + fv(120, 200) + '}',
     /* 행 */
-    '.disp{font-size:90px;line-height:77px;letter-spacing:-0.01em;position:relative;top:var(--d90-dy,-5px)}',
-    '.rows{list-style:none;margin-top:191px;border-top:1px solid #141414}',
-    '.row{display:grid;grid-template-columns:minmax(0,180fr) minmax(0,24fr) minmax(0,478fr) minmax(0,24fr) minmax(0,478fr);padding:55px 0;border-bottom:1px solid #141414}',
+    '.disp{font-size:' + fv(54, 90) + ';line-height:' + fv(46, 77) + ';letter-spacing:-0.01em;position:relative;top:' + fv(-3, -5) + '}',
+    '.rows{list-style:none;margin-top:' + fv(96, 191) + ';border-top:1px solid #141414}',
+    '.row{display:grid;grid-template-columns:minmax(0,180fr) ' + fv(32, 24) + ' minmax(0,478fr) ' + fv(32, 24) + ' minmax(0,478fr);padding:' + fv(36, 55) + ' 0;border-bottom:1px solid #141414}',
     '.num{grid-column:1;font-size:16px;line-height:19px}',
-    '.ttl{grid-column:3;font-weight:600;font-size:23px;line-height:33px;position:relative;top:var(--t23-dy,1px)}',
+    '.ttl{grid-column:3;font-weight:600;font-size:' + fv(19, 23) + ';line-height:' + fv(27, 33) + ';position:relative;top:var(--t23-dy,1px)}',
     '.desc{grid-column:5;font-size:16px;line-height:26px;color:#555;position:relative;top:var(--t16-dy,2px)}',
-    '.gap2{height:180px}',
-    /* 769~1280: 같은 배치, 좌우 24. 피그마가 줄을 정한 1281 이상은 그대로 두고 그 아래만 마지막 줄 한 단어 방지 */
-    '@media (max-width:1280px){.in{max-width:none;margin:0 24px}.lead,.body,.desc{text-wrap:pretty}}',
+    '.gap2{height:' + fv(110, 180) + '}',
+    /* 1024~1280 좌우 48, 768~1023 좌우 32: 같은 배치. 피그마가 줄을 정한 1281 이상은 그대로 두고 그 아래만 마지막 줄 한 단어 방지 */
+    '@media (max-width:1280.98px){.in{max-width:none;margin:0 48px}.lead,.body,.desc{text-wrap:pretty}}',
+    '@media (max-width:1023.98px){.in{margin:0 32px}}',
     /* U+2028 강제 줄바꿈은 글 열이 충분히 넓은 1101 이상에서만(News와 같음) */
-    '@media (max-width:1100px){.d{display:none}}',
-    /* 768 이하: 모바일(News 규칙) */
-    '@media (max-width:768px){',
+    '@media (max-width:1100.98px){.d{display:none}}',
+    /* 767 이하: 390 배치 */
+    '@media (max-width:767.98px){',
+    '.in{margin:0 24px}',
     '.hero{height:auto;padding:184px 0 40px}',
     '.ht{position:static}',
     '.ht .l1{font-size:17px;line-height:17px;top:-1px}',
@@ -100,14 +111,15 @@
     '.lead{font-size:20px;line-height:30px;top:1px}',
     '.body{margin-top:24px}',
     '.gap1{height:120px}',
-    '.disp{font-size:min(72px, calc((100vw - 48px) * 0.21));line-height:min(62px, calc((100vw - 48px) * 0.1806));top:-3px}', /* Differences가 320(글 폭 272)에서 한 줄에 들어가게 */
+    '.disp{font-size:72px;line-height:62px;top:-3px}', /* Differences 306폭, 390 글 폭 342 안 */
     '.rows{margin-top:90px}',
     '.row{display:block;padding:36px 0 35px}',
     '.num{display:block}',
     '.ttl{margin-top:30px;font-size:20px;line-height:30px}',
     '.desc{margin-top:12px}',
     '.gap2{height:120px}',
-    '}'
+    '}',
+    ZOOM
   ].join('\n');
 
   function html(D) {
@@ -123,7 +135,8 @@
 
   class VdviaWid extends HTMLElement {
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
-    connectedCallback() { injectFonts(); this.shadowRoot.innerHTML = html(DATA); }
+    connectedCallback() { fitOn(this); injectFonts(); this.shadowRoot.innerHTML = html(DATA); }
+    disconnectedCallback() { fitOff(); }
   }
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)

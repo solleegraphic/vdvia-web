@@ -8,7 +8,7 @@
  * 폼: 보내기를 누르면 이벤트 'vdvia-contact-submit'(detail: firstName, lastName, email, message, t = 화면을 연 뒤 ms)를 낸다. 윅스 페이지 코드가 백엔드로 접수한 뒤
  *   이 요소의 status 속성을 'sent' 또는 'error'(뒤에 ':아무값' 허용)로 바꾸면 결과 문구를 보여 준다. 20초 안에 답이 없으면 오류 문구(메일 안내). 숨은 칸(contact_ref)에 값이 있으면 봇으로 보고 보내지 않는다.
  *   데모: demo 속성을 주면 0.6초 뒤 sent로 답한다.
- * 1281 이상: 컨테이너 1184 가운데. 769~1280: 같은 배치를 좌우 24 여백으로. 768 이하(윅스 모바일 320 포함): News 모바일 규칙, 폼은 정보 아래로, 이름 두 칸은 세로로.
+ * 폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1281 이상 컨테이너 1184 가운데(피그마 그대로). 1024~1280 좌우 48, 768~1023 좌우 32, 같은 배치에서 글자와 여백을 폭에 비례해 줄인다(fv()). 767 이하는 390 배치(폼은 정보 아래로, 이름 두 칸은 세로로, 좌우 24), 390보다 좁으면 zoom으로 그대로 줄인다(윅스 모바일 320 포함).
  * 윅스: Custom Element, Server URL = 이 파일, Tag = vdvia-contact, 전체 폭.
  */
 (function () {
@@ -73,6 +73,15 @@
     });
   }
 
+  /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
+  function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
+  var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
+  function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
+  function fitOff() { window.__vdviaFit = Math.max(0, (window.__vdviaFit || 1) - 1); if (!window.__vdviaFit) { var st = document.getElementById('vdvia-fit'); if (st) st.parentNode.removeChild(st); } }
+  /* 390보다 좁으면 390 화면을 그대로 줄인다. 윅스 모바일은 320으로 그려 폰 폭으로 키우므로 폰에서 390 디자인 그대로 보인다 */
+  var ZOOM = '@media (max-width:389.98px){:host{zoom:.96154}}@media (max-width:374.98px){:host{zoom:.92308}}@media (max-width:359.98px){:host{zoom:.82051}}';
+
   var CSS = [
     ':host{display:block;background:#fff;color:#141414;font-family:' + SANS + ';font-size:16px;line-height:26px;letter-spacing:-0.16px;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}',
     '*{box-sizing:border-box;margin:0;padding:0}',
@@ -81,23 +90,23 @@
     'a{color:inherit;text-decoration:none}',
     '@media (hover:hover){a:hover{text-decoration:underline;text-underline-offset:3px}}', /* 터치 기기에선 hover가 남아 있지 않게 */
     /* 히어로 */
-    '.hero{position:relative;height:440px}',
-    '.ht{position:absolute;left:0;top:286px;font-weight:400}',
+    '.hero{position:relative;height:' + fv(300, 440) + '}',
+    '.ht{position:absolute;left:0;top:' + fv(200, 286) + ';font-weight:400}',
     '.ht span{display:block;white-space:nowrap;letter-spacing:-0.02em}',
-    '.ht .l1{font-size:39.12px;line-height:39.12px;position:relative;top:var(--l1-dy,-2px)}',
-    '.ht .l2{font-size:94.04px;line-height:94.04px;position:relative;top:var(--l2-dy,10px)}',
+    '.ht .l1{font-size:' + fv(24, 39.12) + ';line-height:' + fv(24, 39.12) + ';position:relative;top:' + fv(-1, -2) + '}',
+    '.ht .l2{font-size:' + fv(56, 94.04) + ';line-height:' + fv(56, 94.04) + ';position:relative;top:' + fv(6, 10) + '}',
     /* Contact */
-    '.contact{min-height:552px}',
+    '.contact{min-height:' + fv(480, 552) + '}',
     '.lab,.ftitle{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
     '.rule{height:1px;background:#141414}',
     '.contact .in > .rule{margin-top:6px}',
-    '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:30px;align-items:start}',
+    '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:' + fv(24, 30) + ';align-items:start}',
     '.info{grid-column:1}',
-    '.lead{font-weight:600;font-size:23px;line-height:33px;position:relative;top:var(--t23-dy,1px)}',
+    '.lead{font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:var(--t23-dy,1px)}',
     '.t16{font-size:16px;line-height:26px;position:relative;top:var(--t16-dy,2px)}',
     '.t13{font-size:13px;line-height:18px;color:#555;position:relative;top:var(--t13-dy,1px)}',
-    '.intro{margin-top:24px}',
-    '.info .rule.r1{margin-top:48px}',
+    '.intro{margin-top:' + fv(16, 24) + '}',
+    '.info .rule.r1{margin-top:' + fv(32, 48) + '}',
     '.rows{margin-top:16px}',
     '.rows dd{margin-top:4px;--t16-dy:1px}', /* 값 줄은 피그마 대조로 1px(소개 줄은 2px) */
     '.nw{white-space:nowrap}',
@@ -125,13 +134,16 @@
     '.status.err{color:#b42318}',
     '.hp{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}', /* 봇용 숨은 칸: 화면 밖으로 빼지 않고 잘라 숨긴다 */
     '.hp label,.hp input{display:block;width:1px;height:1px;padding:0;border:0}',
-    '.gap{height:180px}',
-    '@media (max-width:1280px){.in{max-width:none;margin:0 24px}.intro,.rows dd{text-wrap:pretty}}',
-    '@media (max-width:1100px){.d{display:none}}',
+    '.gap{height:' + fv(110, 180) + '}',
+    '@media (max-width:1280.98px){.in{max-width:none;margin:0 48px}.intro,.rows dd{text-wrap:pretty}}',
+    '@media (max-width:1023.98px){.in{margin:0 32px}}',
+    '@media (max-width:1100.98px){.d{display:none}}',
     /* 1000 이하: 결과 문구를 버튼 아래 한 줄로, 자리를 미리 잡아 두어 문구가 나와도 화면이 밀리지 않게 */
-    '@media (max-width:1000px){.send-row{flex-wrap:wrap;column-gap:24px;row-gap:16px}.status{flex:1 1 100%;min-height:36px}}',
-    /* 768 이하: 모바일(News 규칙) */
-    '@media (max-width:768px){',
+    '@media (max-width:1000.98px){.send-row{flex-wrap:wrap;column-gap:24px;row-gap:16px}.status{flex:1 1 100%;min-height:36px}}',
+    /* 767 이하: 390 배치 */
+    '@media (max-width:767.98px){',
+    '.in{margin:0 24px}',
+    '.intro{margin-top:24px}.info .rule.r1{margin-top:48px}',
     '.hero{height:auto;padding:184px 0 40px}',
     '.ht{position:static}',
     '.ht .l1{font-size:17px;line-height:17px;top:-1px}',
@@ -144,7 +156,8 @@
     '.frow .field + .field{margin-top:32px}',
     '.send{width:100%}', /* 모바일은 칸들과 같은 전체 폭(2026-11-06 Sol) */
     '.gap{height:120px}',
-    '}'
+    '}',
+    ZOOM
   ].join('\n');
 
   function html(D) {
@@ -170,6 +183,7 @@
     constructor() { super(); this.attachShadow({ mode: 'open' }); this._timer = null; this._t0 = Date.now(); this._sent = false; }
     static get observedAttributes() { return ['status']; }
     connectedCallback() {
+      fitOn(this);
       injectFonts();
       if (this.shadowRoot.firstChild) return;
       this.shadowRoot.innerHTML = html(DATA);
@@ -177,6 +191,7 @@
       form.addEventListener('submit', function (e) { e.preventDefault(); self._submit(); });
       form.addEventListener('input', function (e) { var f = e.target.closest('.field'); if (f && f.classList.contains('bad')) { f.classList.remove('bad'); e.target.removeAttribute('aria-invalid'); e.target.removeAttribute('aria-describedby'); } if (self._sent) { self._sent = false; self._say(''); } });
     }
+    disconnectedCallback() { fitOff(); }
     attributeChangedCallback(name, oldV, v) { if (name === 'status' && this.shadowRoot.firstChild) this._result(v); }
     _say(text, err) { var s = this.shadowRoot.querySelector('.status'); s.textContent = text || ''; s.classList.toggle('err', !!err); }
     _submit() {
