@@ -15,7 +15,7 @@
   // ---------- 링크 (data-* 없이 바꾸려면 요소의 links 속성에 JSON: {"company":"/","brand":"/brands", ...}) ----------
   var LINKS = {
     home: '/', company: '/', brand: '/services-1', wid: '/what-is-difference', contact: '/contact-8',
-    mission: '', vision: '', coreValue: '', structure: '', /* 옛 페이지로 가서 링크 뺌(Sol 2026-11-06). 값을 넣으면 다시 링크가 된다 */
+    mission: '/#mission', vision: '/#vision', coreValue: '/#core-value', structure: '/#structure', /* 옛 페이지 대신 새 홈의 해당 섹션(Sol 2026-11-06). 비우면 글자만 남는다 */
     lemonderma: '/services-1', xomage: '/services-1', news: '/news', privacy: ''
   };
   var NAV = [['Company', 'company'], ['Brand', 'brand'], ['What is Different', 'wid'], ['News', 'news'], ['Contact', 'contact']];
@@ -186,6 +186,13 @@
         '<div class="f-left"><p class="f-copy">' + esc(F.copy) + '</p><div class="f-info">' + F.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('') + '</div>' + priv + fam + '</div>' +
         '<a class="lockup" href="' + esc(L.home) + '" aria-label="VDVIA, a ZISHEL company">' + lockup('lk') + '</a></div></footer>';
       var root = this.shadowRoot;
+      // 홈에서는 페이지를 다시 열지 않고 스크롤한다. 해시가 그대로여도(같은 항목을 또 눌러도) 움직인다.
+      root.querySelectorAll('.fc li a[href^="/#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var h = document.querySelector('vdvia-home'), id = a.getAttribute('href').slice(2);
+          if (h && h.goTo && h.goTo(id, true)) { e.preventDefault(); if (location.hash !== '#' + id) history.replaceState(history.state, '', '#' + id); }
+        });
+      });
       // 모바일 아코디언
       root.querySelectorAll('.fc .sg[aria-expanded]').forEach(function (b) {
         b.addEventListener('click', function () { var fc = b.closest('.fc'), o = fc.classList.toggle('open'); b.setAttribute('aria-expanded', o ? 'true' : 'false'); b.textContent = o ? '−' : '+'; });

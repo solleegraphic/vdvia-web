@@ -207,12 +207,12 @@
 
   function html(D, base) {
     var mv = function (cls, M) {
-      return '<section class="mv ' + cls + '"><div class="in"><p class="lab">' + esc(M.label) + '</p>' +
+      return '<section id="' + cls + '" class="mv ' + cls + '"><div class="in"><p class="lab">' + esc(M.label) + '</p>' +
         '<div class="cols rules"><div class="rule"></div><div class="rule"></div></div>' +
         '<div class="cols"><h2 class="disp serif">' + lines(M.display) + '</h2><div class="r"><p class="t23">' + lines(M.lead) + '</p><p class="t16 helv">' + lines(M.body) + '</p></div></div></div></section>';
     };
     var C = D.core, S = D.structure, A = D.about;
-    return '<style>' + CSS + '</style>' +
+    return '<style>' + CSS + 'section[id]{scroll-margin-top:40px}</style>' +
       '<section class="hero"><div class="in"><p class="hlead t23">' + lines(D.heroLead) + '</p>' +
       '<h1 class="ht serif"><span class="l1">' + esc(D.heroTitle[0]) + '</span><span class="l2">' + esc(D.heroTitle[1]) + '</span></h1></div></section>' +
       '<section class="about"><div class="in"><div class="rule"></div><div class="ab-grid">' +
@@ -220,22 +220,44 @@
       '<p class="ab-cap">' + esc(A.caption) + '</p><div class="ab-vr" role="presentation"></div>' +
       '<div class="ab-txt"><p class="ab-head">' + lines(A.head) + '</p><p class="ab-body t16 helv">' + lines(A.body) + '</p></div></div></div></section>' +
       '<div class="gap53" aria-hidden="true"></div>' + mv('mission', D.mission) + '<div class="gap280" aria-hidden="true"></div>' + mv('vision', D.vision) + '<div class="gap280" aria-hidden="true"></div>' +
-      '<section class="core"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<section id="core-value" class="core"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
       '<div class="head2"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
       '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap280" aria-hidden="true"></div>' +
-      '<section class="st"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
+      '<section id="structure" class="st"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
       '<div class="head2"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
       '<div class="scells" role="list"><i class="svr" aria-hidden="true" style="left:33.3333%"></i><i class="svr" aria-hidden="true" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="' + esc(c[3]) + '" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap180" aria-hidden="true"></div>';
   }
 
+  var SECTIONS = /^(mission|vision|core-value|structure)$/; // 푸터 Company 하위 링크가 오는 자리(/#mission 등, Sol 2026-11-06)
+
   class VdviaHome extends HTMLElement {
     static get observedAttributes() { return ['img-base']; }
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
-    connectedCallback() { injectFonts(); this._render(); }
+    connectedCallback() { injectFonts(); this._render(); this._bindHash(); }
+    disconnectedCallback() { window.removeEventListener('hashchange', this._onHash); }
     attributeChangedCallback() { if (this.shadowRoot.firstChild) this._render(); }
     _render() { this.shadowRoot.innerHTML = html(DATA, this.getAttribute('img-base') || IMG_BASE); }
+    // 섀도 안 섹션은 브라우저 기본 앵커 이동이 닿지 않아 직접 스크롤한다.
+    goTo(id, smooth) {
+      var t = SECTIONS.test(id) && this.shadowRoot.getElementById(id);
+      if (!t) return false;
+      t.scrollIntoView({ block: 'start', behavior: smooth && !window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto' });
+      return true;
+    }
+    _bindHash() {
+      var self = this, id = function () { return location.hash.slice(1); };
+      this._onHash = function () { self.goTo(id(), true); };
+      window.addEventListener('hashchange', this._onHash);
+      if (!SECTIONS.test(id())) return;
+      // 다른 페이지에서 올 때: 윅스와 글꼴 로드로 높이가 바뀌므로 사용자가 움직이기 전까지 몇 번 다시 맞춘다.
+      var moved = false, stop = function () { moved = true; };
+      window.addEventListener('wheel', stop, { once: true, passive: true });
+      window.addEventListener('touchstart', stop, { once: true, passive: true });
+      [0, 300, 1000, 2500].forEach(function (ms) { setTimeout(function () { if (!moved) self.goTo(id(), false); }, ms); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!moved) self.goTo(id(), false); });
+    }
   }
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)
