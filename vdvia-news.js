@@ -31,12 +31,12 @@
   "items": [
     [
       "2026.10",
-      "Lemonderma opens on Qoo10 Japan.",
+      "Lemonderma enters Japan.",
       "Our first direct-to-consumer channel in Japan, shipped cross-border from Korea, starting with the Lemonshot serum."
     ],
     [
       "2026.09",
-      "VDVIA becomes the exclusive Amazon US seller of ZISHEL XOMAGE COSMETICS.",
+      "ZISHEL XOMAGE COSMETICS launches.",
       "Zishel Group appointed VDVIA to run Amazon US sales and marketing for its exosome and PDRN based cosmetic brand."
     ],
     [
