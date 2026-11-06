@@ -40,7 +40,7 @@
     ],
     [
       "Office",
-      "5F, 18 Apgujeong-ro 28-gil, Gangnam-gu, Seoul, Korea",
+      "7F, 214 Bongeunsa-ro, Gangnam-gu, Seoul, Korea",
       null
     ]
   ],
