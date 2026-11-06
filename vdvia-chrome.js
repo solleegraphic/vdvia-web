@@ -15,7 +15,7 @@
   // ---------- 링크 (data-* 없이 바꾸려면 요소의 links 속성에 JSON: {"company":"/","brand":"/brands", ...}) ----------
   var LINKS = {
     home: '/', company: '/', brand: '/services-1', wid: '/what-is-difference', contact: '/contact-8',
-    mission: '/mission-and-vision', vision: '/mission-and-vision', coreValue: '/what-we-do', structure: '/about-3',
+    mission: '', vision: '', coreValue: '', structure: '', /* 옛 페이지로 가서 링크 뺌(Sol 2026-11-06). 값을 넣으면 다시 링크가 된다 */
     lemonderma: '/services-1', xomage: '/services-1', news: '/news', privacy: ''
   };
   var NAV = [['Company', 'company'], ['Brand', 'brand'], ['What is Different', 'wid'], ['News', 'news'], ['Contact', 'contact']];
@@ -138,7 +138,7 @@
     '.f-in{padding:40px 24px}',
     '.fh{display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-size:14px;line-height:20px;color:#fff;border-bottom:1px solid #2a2a2a}',
     '.fh a{flex:1}.fh .sg{flex:none;width:24px;height:20px;line-height:20px;text-align:right;font-size:14px;color:#fff;padding:0}',
-    '.fc ul{display:none;padding:8px 0 12px;border-bottom:1px solid #2a2a2a}.fc.open ul{display:block}.fc li a{display:block;font-size:14px;line-height:24px;color:#ccc;padding:2px 0}',
+    '.fc ul{display:none;padding:8px 0 12px;border-bottom:1px solid #2a2a2a}.fc.open ul{display:block}.fc li a,.fc li .tx{display:block;font-size:14px;line-height:24px;color:#ccc;padding:2px 0}',
     '.f-copy{margin-top:40px;font-size:14px;line-height:24px}',
     '.f-info{margin-top:16px;font-size:13px;line-height:22px;color:#9d9d9d}',
     '.f-priv{display:block;margin-top:10px;font-size:13px;line-height:22px;color:#fff}',
@@ -159,7 +159,7 @@
     '.f-cols{position:absolute;left:342px;top:30px;display:flex;gap:0}',
     '.fc{width:170px}.fc+.fc{margin-left:-2px}',
     '.fh{display:block;padding:0;border:0;font-size:14px;line-height:18px;color:#959595;margin-bottom:19px}.fh .sg{display:none}',
-    '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
+    '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a,.fc li .tx{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
     '.lockup{position:absolute;left:50%;bottom:60px;width:592px;margin:0;transform:translateX(-50%)}',
     '}'
   ].join('\n');
@@ -176,7 +176,7 @@
         var has = c[2].length > 0;
         return '<div class="fc"><div class="fh"><a href="' + esc(L[c[1]]) + '">' + esc(c[0]) + '</a>' +
           (has ? '<button class="sg" type="button" aria-expanded="false" aria-label="' + esc(c[0]) + ' submenu">+</button>' : '<a class="sg" href="' + esc(L[c[1]]) + '" aria-hidden="true" tabindex="-1">↗</a>') + '</div>' +
-          (has ? '<ul>' + c[2].map(function (s) { return '<li><a href="' + esc(L[s[1]]) + '">' + esc(s[0]) + '</a></li>'; }).join('') + '</ul>' : '') + '</div>';
+          (has ? '<ul>' + c[2].map(function (s) { return '<li>' + (L[s[1]] ? '<a href="' + esc(L[s[1]]) + '">' + esc(s[0]) + '</a>' : '<span class="tx">' + esc(s[0]) + '</span>') + '</li>'; }).join('') + '</ul>' : '') + '</div>';
       }).join('');
       var priv = L.privacy ? '<a class="f-priv" href="' + esc(L.privacy) + '">' + esc(F.privacy) + '</a>' : '<span class="f-priv">' + esc(F.privacy) + '</span>';
       var fam = '<div class="fam"><button class="sel" type="button" aria-haspopup="true" aria-expanded="false"><span>' + esc(F.family) + '</span>' + CHEV + '</button>' +
@@ -204,7 +204,7 @@
   if (typeof window !== 'undefined') {
     window.VDVIA_HEADER_SEO_HTML = '<nav><a href="' + LINKS.home + '">VDVIA</a>' + NAV.map(function (n) { return '<a href="' + LINKS[n[1]] + '">' + esc(n[0]) + '</a>'; }).join('') + '</nav>';
     window.VDVIA_FOOTER_SEO_HTML = '<footer><p>' + esc(FOOTER.copy) + '</p>' + FOOTER.info.map(function (l) { return '<p>' + esc(l) + '</p>'; }).join('') + '<ul>' +
-      FOOTER.cols.map(function (c) { return '<li><a href="' + LINKS[c[1]] + '">' + esc(c[0]) + '</a>' + (c[2].length ? '<ul>' + c[2].map(function (s) { return '<li><a href="' + LINKS[s[1]] + '">' + esc(s[0]) + '</a></li>'; }).join('') + '</ul>' : '') + '</li>'; }).join('') + '</ul><p>VDVIA, a ZISHEL company</p></footer>';
+      FOOTER.cols.map(function (c) { return '<li><a href="' + LINKS[c[1]] + '">' + esc(c[0]) + '</a>' + (c[2].length ? '<ul>' + c[2].map(function (s) { return '<li>' + (LINKS[s[1]] ? '<a href="' + LINKS[s[1]] + '">' + esc(s[0]) + '</a>' : esc(s[0])) + '</li>'; }).join('') + '</ul>' : '') + '</li>'; }).join('') + '</ul><p>VDVIA, a ZISHEL company</p></footer>';
   }
 
   if (typeof customElements !== 'undefined') {
