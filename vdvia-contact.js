@@ -142,6 +142,7 @@
     '.form{margin-top:80px}',
     '.frow{display:block}',
     '.frow .field + .field{margin-top:32px}',
+    '.send{width:100%}', /* 모바일은 칸들과 같은 전체 폭(2026-11-06 Sol) */
     '.gap{height:120px}',
     '}'
   ].join('\n');
