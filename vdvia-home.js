@@ -138,7 +138,7 @@
     var link = document.getElementById('vdvia-font-garamond');
     setTimeout(go, 1500);
     if (link && !link.sheet) link.addEventListener('load', load, { once: true }); else load();
-    /* 나머지는 윗선이 화면 85%에 닿으면 한 번만. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
+    /* 나머지는 윗선이 화면 70%(767 이하는 85%)에 닿으면 한 번만(2026-11-06 Sol: 85%는 라벨만 보일 때 끝나 등장이 안 보였다). 첫 화면에 이미 있는 것은 바로. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
     var io = new IntersectionObserver(function (es) {
       var n = 0;
       es.forEach(function (e) {
@@ -147,8 +147,8 @@
         if (e.target.classList.contains('rs')) e.target.style.setProperty('--rv-d', (100 + 100 * n++) + 'ms');
         on(e.target);
       });
-    }, { rootMargin: '0px 0px -15% 0px' });
-    [].forEach.call(rest, function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px ' + (window.matchMedia('(min-width:768px)').matches ? '-30%' : '-15%') + ' 0px' });
+    [].forEach.call(rest, function (el) { if (el.getBoundingClientRect().top < window.innerHeight * .85) on(el); else io.observe(el); });
     return io;
   }
 
@@ -268,13 +268,13 @@
       '<p class="ab-cap">' + esc(A.caption) + '</p><div class="ab-vr" role="presentation"></div>' +
       '<div class="ab-txt"><p class="ab-head">' + lines(A.head) + '</p><p class="ab-body t16 helv">' + lines(A.body) + '</p></div></div></div></section>' +
       '<div class="gap53" aria-hidden="true"></div>' + mv('mission', D.mission) + '<div class="gap280" aria-hidden="true"></div>' + mv('vision', D.vision) + '<div class="gap280" aria-hidden="true"></div>' +
-      '<section id="core-value" class="core rv"><div class="in"><p class="lab">' + esc(C.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
-      '<div class="head2"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
-      '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<section id="core-value" class="core"><div class="in"><p class="lab rv">' + esc(C.label) + '</p><div class="rule rv" style="margin-top:6px"></div>' +
+      '<div class="head2 rv"><h2 class="disp serif">' + lines(C.display) + '</h2><p class="t16">' + lines(C.body) + '</p></div>' +
+      '<div class="cells" role="list">' + C.cells.map(function (c) { return '<div class="cell rv rs" role="listitem"><h3 class="cname serif">' + esc(c[0]) + '</h3><div class="rule"></div><p class="t16">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap280" aria-hidden="true"></div>' +
-      '<section id="structure" class="st rv"><div class="in"><p class="lab">' + esc(S.label) + '</p><div class="rule" style="margin-top:6px"></div>' +
-      '<div class="head2"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
-      '<div class="scells" role="list"><i class="svr" aria-hidden="true" style="left:33.3333%"></i><i class="svr" aria-hidden="true" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="' + esc(c[3]) + '" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
+      '<section id="structure" class="st"><div class="in"><p class="lab rv">' + esc(S.label) + '</p><div class="rule rv" style="margin-top:6px"></div>' +
+      '<div class="head2 rv"><h2 class="disp90 serif">' + lines(S.display) + '</h2><p class="t16">' + lines(S.body) + '</p></div>' +
+      '<div class="scells rv" role="list"><i class="svr" aria-hidden="true" style="left:33.3333%"></i><i class="svr" aria-hidden="true" style="left:66.6667%"></i>' + S.cells.map(function (c) { return '<div class="scell rv rs" role="listitem"><img src="' + esc(base + c[2]) + '" width="359" height="224" alt="' + esc(c[3]) + '" loading="lazy"><h3 class="stitle">' + esc(c[0]) + '</h3><p class="sbody">' + esc(c[1]) + '</p></div>'; }).join('') + '</div></div></section>' +
       '<div class="gap180" aria-hidden="true"></div>';
   }
 

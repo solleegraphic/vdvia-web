@@ -92,7 +92,7 @@
     var link = document.getElementById('vdvia-font-garamond');
     setTimeout(go, 1500);
     if (link && !link.sheet) link.addEventListener('load', load, { once: true }); else load();
-    /* 나머지는 윗선이 화면 85%에 닿으면 한 번만. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
+    /* 나머지는 윗선이 화면 70%(767 이하는 85%)에 닿으면 한 번만(2026-11-06 Sol: 85%는 라벨만 보일 때 끝나 등장이 안 보였다). 첫 화면에 이미 있는 것은 바로. 목록 칸(.rs)은 0.1초 지연, 한꺼번에 들어오면 0.1초씩 차례로 */
     var io = new IntersectionObserver(function (es) {
       var n = 0;
       es.forEach(function (e) {
@@ -101,8 +101,8 @@
         if (e.target.classList.contains('rs')) e.target.style.setProperty('--rv-d', (100 + 100 * n++) + 'ms');
         on(e.target);
       });
-    }, { rootMargin: '0px 0px -15% 0px' });
-    [].forEach.call(rest, function (el) { io.observe(el); });
+    }, { rootMargin: '0px 0px ' + (window.matchMedia('(min-width:768px)').matches ? '-30%' : '-15%') + ' 0px' });
+    [].forEach.call(rest, function (el) { if (el.getBoundingClientRect().top < window.innerHeight * .85) on(el); else io.observe(el); });
     return io;
   }
 
