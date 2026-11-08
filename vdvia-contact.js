@@ -75,6 +75,7 @@
 
   /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
   function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  function fw(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 1024px) * ' + ((b - a) / 256).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; } /* 1024에서 a, 1280에서 b */
   /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
   var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
   function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
@@ -175,6 +176,31 @@
     '@media (max-width:1100.98px){.d{display:none}}',
     /* 1000 이하: 결과 문구를 버튼 아래 한 줄로, 자리를 미리 잡아 두어 문구가 나와도 화면이 밀리지 않게 */
     '@media (max-width:1000.98px){.send-row{flex-wrap:wrap;column-gap:24px;row-gap:16px}.status{flex:1 1 100%;min-height:36px}}',
+    /* 1281 이상: Sol 1920 Home 수정본의 규칙 */
+    '@media (min-width:1281px){',
+    '.ht .l1{top:-5px}.ht .l2{top:17.4px}',
+    '.lead{letter-spacing:0}',
+    '.intro{line-height:23px;letter-spacing:0}',
+    '.info .rule.r1,.info .rule.r2{background:rgba(20,20,20,.3)}',
+    '.gap{height:162px}',
+    '}',
+    /* 1024~1280: Sol 1024 Home 수정본의 규칙 */
+    '@media (min-width:1024px) and (max-width:1280.98px){',
+    '.ht .l1{top:' + fw(-3.5, -5) + '}.ht .l2{top:' + fw(17, 17.4) + '}',
+    ':host{--lab-dy:2px}',
+    '.lead{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.intro{line-height:23px;letter-spacing:' + fw(-0.16, 0) + '}',
+    '.info .rule.r1,.info .rule.r2{background:rgba(20,20,20,.3)}',
+    '.gap{height:' + fw(120.5, 162) + '}',
+    '}',
+    /* 768~1023: Sol 768 Home 수정본의 규칙 */
+    '@media (min-width:768px) and (max-width:1023.98px){',
+    '.ht .l1{top:-.5em}.ht .l2{top:3px}',
+    ':host{--lab-dy:2px}',
+    '.lead{line-height:26px}.intro{line-height:23px;letter-spacing:0}',
+    '.info .rule.r1,.info .rule.r2{background:rgba(20,20,20,.3)}',
+    '.gap{height:139.06px}',
+    '}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
     '.in{margin:0 29.25px}',

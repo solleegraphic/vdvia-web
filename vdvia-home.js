@@ -64,7 +64,7 @@
       ],
       [
         "Sustainability",
-        "Designing profit with \u2029environmental and social responsibility."
+        "Designing profit with \u2068environmental \u2069and social responsibility."
       ],
       [
         "Customer-Centricity",
@@ -75,7 +75,7 @@
   "structure": {
     "label": "Structure",
     "display": "Healthcare,\nLifestyle,\nCreativity",
-    "body": "VDVIA is built on three pillars:\nHealthcare, Lifestyle and Creativity.",
+    "body": "VDVIA is built on three pillars:\nHealthcare, Lifestyle and\u00a0Creativity.", /* and와 Creativity.는 붙여 둔다(768에서 마지막 줄 한 단어 방지, Sol 768 보드와 같은 줄바꿈) */
     "cells": [
       [
         "Healthcare",
@@ -100,7 +100,7 @@
 };
 
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function lines(s) { return esc(s).replace(/ ?\u2029/g, ' <br class="m">').replace(/ ?(\u2028|\n)/g, '<br>'); } /* U+2029 = 767 이하에서만 끊는 자리(Sol 수정본) */
+  function lines(s) { return esc(s).replace(/ ?\u2029/g, ' <br class="m">').replace(/ ?\u2068/g, ' <br class="mo">').replace(/ ?\u2069/g, ' <br class="tb">').replace(/ ?(\u2028|\n)/g, '<br>'); } /* Sol 수정본의 끊는 자리: U+2029 = 전 폭, U+2068 = 767 이하만, U+2069 = 768 이상만 */
   function injectFonts() {
     if (typeof document === 'undefined') return;
     FONT_LINKS.forEach(function (f) {
@@ -111,6 +111,7 @@
 
   /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
   function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  function fw(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 1024px) * ' + ((b - a) / 256).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; } /* 1024에서 a, 1280에서 b */
   /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
   var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
   function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
@@ -159,7 +160,7 @@
     'img{display:block;width:100%;height:auto}',
     '.serif{font-family:' + SERIF + ';font-weight:400}',
     '.rule{height:1px;background:#141414}',
-    '.m{display:none}',
+    '.mo{display:none}',
     '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
     '.t23{font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:1px}',
     '.t16{font-size:16px;line-height:26px;position:relative;top:2px}',
@@ -215,10 +216,96 @@
     /* 1024~1280 좌우 48, 768~1023 좌우 32: 같은 배치. 피그마가 줄을 정한 1281 이상은 그대로 두고 그 아래만 마지막 줄 한 단어 방지 */
     '@media (max-width:1280.98px){.in{max-width:none;margin:0 48px}.t16,.helv,.sbody{text-wrap:pretty}.cname{white-space:normal}}', /* 글자가 칸보다 커져도(사파리 화면 확대 등) 가로로 넘치지 않게 */
     '@media (max-width:1023.98px){.in{margin:0 32px}}',
+    /* 1281 이상: Sol 수정본(피그마 1280:4601) 값 */
+    '@media (min-width:1281px){',
+    '.hlead{letter-spacing:0}',
+    '.ht .l1{top:-5px}.ht .l2{top:17.4px}',
+    '.ab-head{line-height:24px;letter-spacing:0}',
+    '.ab-body{margin-top:38px;width:275px;line-height:23px;letter-spacing:0;top:3px}',
+    '.ab-under{line-height:23px}',
+    '.about{min-height:638px}',
+    '.mission,.vision,.core{min-height:0}',
+    '.disp{line-height:89px;letter-spacing:0;top:-9px}',
+    '.mv .t23{letter-spacing:0}',
+    '.mv .helv{margin-top:32px;line-height:23px;letter-spacing:0}',
+    '.mission + .gap280{height:199.5px}.vision + .gap280{height:169px}.core + .gap280{height:237px}',
+    '.core .head2 .t16,.st .head2 .t16{font-weight:600;font-size:23px;line-height:33px}',
+    '.core .head2 .t16{letter-spacing:0}',
+    '.cells{margin-top:158.5px;row-gap:60.5px}',
+    '.cname{font-size:61px;letter-spacing:-.68px;top:-7px}',
+    '.cell .rule{margin-top:3px;background:rgba(20,20,20,.3)}',
+    '.cell .t16{margin-top:17.5px;line-height:23px}',
+    '.st .disp90{font-size:82px;line-height:89px;letter-spacing:0;top:-9px}',
+    '.scells{margin-top:124.5px;border-top-color:rgba(20,20,20,.3);border-bottom-color:rgba(20,20,20,.3)}',
+    '.svr{background:rgba(20,20,20,.3)}',
+    '.scell{min-height:0;padding-bottom:27px}',
+    '.stitle{font-size:14px}',
+    '.sbody{line-height:20px;letter-spacing:0}',
+    '.gap180{height:162px}',
+    '}',
+    /* 1024~1280: Sol 수정본(피그마 1270:2649) 값 */
+    '@media (min-width:1024px) and (max-width:1280.98px){',
+    '.hero{height:' + fw(392.8, 550) + '}',
+    '.ht{top:' + fw(245.3, 367) + '}',
+    '.ht .l1{top:' + fw(-3.5, -5) + '}.ht .l2{top:' + fw(17, 17.4) + '}',
+    ':host{--lab-dy:2px;--helv-dy:3px;--under-dy:3px;--h18-dy:-1px;--t14-dy:2px}',
+    '.hlead{letter-spacing:' + fw(-0.16, 0) + '}',
+    '.ab-head{line-height:' + fw(26, 24) + ';letter-spacing:0}',
+    '.ab-body{margin-top:' + fw(28, 38) + ';line-height:' + fw(24, 23) + '}',
+    '.ab-under{line-height:' + fw(24, 23) + '}',
+    '.about{min-height:' + fw(569.5, 638) + '}',
+    '.gap53{height:' + fw(32, 53) + '}',
+    '.mission,.vision,.core{min-height:0}',
+    '.disp{line-height:' + fw(73.5, 89) + ';letter-spacing:0;top:' + fw(-7, -9) + '}',
+    '.st .disp90{font-size:' + fw(72, 82) + ';line-height:' + fw(76, 89) + ';letter-spacing:' + fw(-0.72, 0) + ';top:' + fw(-8, -9) + '}',
+    '.mv .t23{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.mv .helv{margin-top:' + fw(54, 32) + ';line-height:' + fw(24, 23) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.mission + .gap280{height:' + fw(137, 199.5) + '}.vision + .gap280{height:' + fw(116.9, 169) + '}.core + .gap280{height:' + fw(189.5, 237) + '}',
+    '.core .head2 .t16{font-weight:600;font-size:' + fw(17.5, 23) + ';line-height:' + fw(26, 33) + ';letter-spacing:0;top:1px}',
+    '.st .head2 .t16{font-weight:600;font-size:' + fw(16, 23) + ';line-height:' + fw(22, 33) + ';top:3px}',
+    '.cells{margin-top:' + fw(130, 158.5) + ';row-gap:' + fw(53.5, 60.5) + '}',
+    '.cname{font-size:' + fw(47.5, 61) + ';line-height:' + fw(54.5, 68) + ';letter-spacing:' + fw(-0.54, -0.68) + ';top:' + fw(-6, -7) + '}',
+    '.cell .rule{margin-top:' + fw(0.5, 3) + ';background:rgba(20,20,20,.3)}',
+    '.cell .t16{margin-top:' + fw(10.5, 17.5) + ';line-height:23px}',
+    '.scells{margin-top:' + fw(127, 124.5) + ';border-top-color:rgba(20,20,20,.3);border-bottom-color:rgba(20,20,20,.3)}',
+    '.svr{background:rgba(20,20,20,.3)}',
+    '.scell{min-height:0;padding-bottom:' + fw(17, 27) + '}',
+    '.stitle{font-size:14px}',
+    '.sbody{margin-top:' + fw(7, 10) + ';line-height:' + fw(22, 20) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.gap180{height:' + fw(120.5, 162) + '}',
+    '}',
+    /* 768~1023: Sol 수정본(피그마 1270:3162) 값 */
+    '@media (min-width:768px) and (max-width:1023.98px){',
+    '.ht .l1{top:-.5em}.ht .l2{top:3px}',
+    ':host{--lab-dy:2px;--helv-dy:3px;--under-dy:2px;--h18-dy:1px}',
+    '.hlead{line-height:26px}',
+    '.ab-head{line-height:23px}',
+    '.ab-body{margin-top:33px;line-height:23px}',
+    '.ab-under{line-height:23px}',
+    '.about{min-height:0}',
+    '.gap53{height:143.3px}',
+    '.mission,.vision,.core{min-height:0}',
+    '.disp{line-height:1.11224;letter-spacing:0;top:-4.5px}',
+    '.mv .t23{line-height:26px;top:1px}.mv .helv{line-height:23px;top:4px}',
+    '.cname{top:-4px}',
+    '.st .disp90{top:-6px}',
+    '.mission .helv{margin-top:31px}.vision .helv{margin-top:39px}',
+    '.mission + .gap280{height:136px}.vision + .gap280{height:128px}.core + .gap280{height:138.1px}',
+    '.core .head2 .t16{font-weight:600;line-height:23px;top:1.5px}',
+    '.cells{row-gap:52px;margin-top:calc(' + fv(72, 216) + ' - 5px)}',
+    '.cell .rule{background:rgba(20,20,20,.3)}',
+    '.cell .t16{line-height:22px;letter-spacing:0;top:3px}',
+    '.st .head2 .t16{font-weight:600;line-height:22px;letter-spacing:0}',
+    '.scells{border-top-color:rgba(20,20,20,.3);border-bottom-color:rgba(20,20,20,.3)}',
+    '.svr{background:rgba(20,20,20,.3)}',
+    '.stitle{font-size:14px;letter-spacing:0;top:0}',
+    '.sbody{margin:4.4px 0 .6px;font-size:14px;line-height:19px;letter-spacing:0}',
+    '.gap180{height:139.06px}',
+    '}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
     '.in{margin:0 29.25px}',
-    '.m{display:inline}',
+    '.mo{display:inline}.tb{display:none}',
     '.t16,.helv,.lab,.t23{top:0}',
     '.lab{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
     '.hero{height:auto;padding:97.5px 0 20px}',
@@ -325,7 +412,7 @@
 
   // SEO 평문 (윅스 페이지 코드에서 $w('#id').seoMarkup 에 넣을 때 사용)
   if (typeof window !== 'undefined') {
-    var p = function (s) { return '<p>' + esc(String(s).replace(/ ?(\u2028|\u2029|\n)/g, ' ')) + '</p>'; };
+    var p = function (s) { return '<p>' + esc(String(s).replace(/ ?(\u2028|\u2029|\u2068|\u2069|\u00a0|\n)/g, ' ')) + '</p>'; };
     var D = DATA;
     window.VDVIA_HOME_SEO_HTML = '<h1>' + esc(D.heroTitle.join(' ')) + '</h1>' + p(D.heroLead) + p(D.about.head) + p(D.about.body) + p(D.about.under) +
       [D.mission, D.vision].map(function (m) { return '<h2>' + esc(m.display.replace(/ ?(\u2028|\n)/g, ' ')) + '</h2>' + p(m.lead) + p(m.body); }).join('') +

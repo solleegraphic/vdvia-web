@@ -88,6 +88,7 @@
     '.nav a:hover{opacity:.6}',
     '.menu{display:none}',
     '}',
+    '@media (min-width:768px) and (max-width:1023.98px){.menu i{height:1px}}', /* Sol 768 수정본(1270:3162): 메뉴 선 1px */
     /* 767 이하: Sol 수정본(피그마 1262:452) 헤더 78, 락업 93 y30, 메뉴 선 26.8×1 y32.3, y43.9 */
     '@media (max-width:767.98px){:host{height:78px}.hd,.hd .in{height:78px}.in{padding:0 29.25px}.logo{width:93px;margin-top:30px}.menu{width:26.8px;height:12.6px;align-self:flex-start;margin-top:32.3px}.menu i{width:26.8px;height:1px}.menu i+i{top:11.6px}}'
   ].join('\n');
@@ -202,6 +203,7 @@
     '.fc ul,.fc.open ul{display:block;padding:0;border:0}.fc li a,.fc li .tx{padding:0;font-size:14px;line-height:24px;color:#ccc}.fc li a:hover{color:#fff}',
     '.lockup{position:absolute;left:50%;bottom:60px;width:592px;margin:0;transform:translateX(-50%)}',
     '}',
+    '@media (min-width:768px) and (max-width:1023.98px){.lockup{width:414px;max-width:none;margin:117.9px auto 0}}', /* Sol 768 수정본: 로고 414 가운데, 푸터 높이는 그대로 */
     /* 767 이하: Sol 수정본 푸터(윗 여백 68.25까지, 행 64.6, 정보 15.84/26.81, 셀렉트 219.4×48.8, 락업 156 가운데) */
     '@media (max-width:767.98px){.f-in{padding:48.75px 29.25px 54.5px}.fh{padding:19.6px 0;font-size:17.0625px;line-height:24.375px;letter-spacing:-.195px}.fh .sg{width:29.3px;height:24.375px;line-height:24.375px;font-size:17.0625px}.fc li a,.fc li .tx{font-size:17.0625px;line-height:29.25px}.f-copy{margin-top:49px;font-size:17.0625px;line-height:29.25px;letter-spacing:-.195px}.f-info{margin-top:19px;font-size:15.84375px;line-height:26.8125px;letter-spacing:-.195px}.f-priv{margin-top:12px;font-size:15.84375px;line-height:26.8125px;letter-spacing:-.195px}.fam{margin-top:49.3px;width:219.4px}.sel{width:219.4px;height:48.8px;padding:9px 15px;font-size:17.0625px;line-height:29.25px;letter-spacing:-.195px}.sel .chev{width:12.2px;height:7.3px}.fam-list{width:219.4px;top:48.8px}.fam-list a{padding:9px 15.9px;font-size:17.0625px;line-height:29.25px}.lockup{width:156px;max-width:none;margin:123.9px auto 0}}',
     '@media (max-width:1280.98px){.nb{white-space:nowrap}}', /* 1281 이상은 피그마 줄 그대로, 그 아래는 사업자번호를 하이픈에서 끊지 않는다 */

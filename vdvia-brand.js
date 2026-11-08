@@ -65,6 +65,7 @@
 
   /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
   function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  function fw(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 1024px) * ' + ((b - a) / 256).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; } /* 1024에서 a, 1280에서 b */
   /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
   var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
   function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
@@ -132,7 +133,7 @@
     '.brand + .brand{margin-top:' + fv(64, 110) + '}',
     '.bname{grid-column:1/3;font-size:0;line-height:0}',
     '.b1 .logo{width:220px;height:33px}.b2 .logo{width:95px;height:56px}',
-    '.brand .rule{grid-column:1/3}',
+    '.brand .rule{grid-column:1/3;background:rgba(20,20,20,.3)}', /* 목록 안 선은 30%(Sol 390, 768, 1024, 1920 보드의 칸 선 규칙, 2026-11-08) */
     '.b1 .rule{margin-top:25px}.b2 .rule{margin-top:14px}',
     '.photo{grid-column:1;width:100%;height:auto;margin-top:16px;object-fit:cover}',
     '.b1 .photo{aspect-ratio:378.67/276.32}.b2 .photo{aspect-ratio:378.67/237}',
@@ -143,6 +144,34 @@
     '@media (max-width:1023.98px){.in{margin:0 32px}}',
     /* 900 이하: 2열이 너무 좁아져 브랜드 칸을 전체 폭으로 편다 */
     '@media (max-width:900.98px){.brand{grid-column:1/4}}',
+    /* 1281 이상: Sol 1920 Home 수정본의 규칙 */
+    '@media (min-width:1281px){',
+    '.disp{line-height:89px;letter-spacing:0;top:-10px}',
+    '.t23{letter-spacing:0}',
+    '.helv{line-height:23px;letter-spacing:0}',
+    '.txt .t16{line-height:23px}',
+    '.list{margin-top:306px}',
+    '.gap180{height:162px}',
+    '}',
+    /* 1024~1280: Sol 1024 Home 수정본의 규칙 */
+    '@media (min-width:1024px) and (max-width:1280.98px){',
+    '.disp{line-height:' + fw(73.5, 89) + ';letter-spacing:0;top:' + fw(-8, -10) + '}',
+    ':host{--lab-dy:2px;--helv-dy:2px}',
+    '.t23{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.helv{line-height:' + fw(24, 23) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.txt .t16{line-height:23px}',
+    '.list{margin-top:' + fw(203, 306) + '}',
+    '.gap180{height:' + fw(120.5, 162) + '}',
+    '}',
+    /* 768~1023: Sol 768 Home 수정본의 규칙 */
+    '@media (min-width:768px) and (max-width:1023.98px){',
+    '.disp{line-height:1.11224;letter-spacing:0;top:-5.5px}',
+    ':host{--lab-dy:2px;--helv-dy:3px}',
+    '.t23{line-height:26px}.helv{line-height:23px}',
+    '.list{margin-top:calc(' + fv(110, 312) + ' - 5px)}',
+    '.txt .t16{line-height:22px;letter-spacing:0;top:3px}',
+    '.gap180{height:139.06px}',
+    '}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
     '.in{margin:0 29.25px}',

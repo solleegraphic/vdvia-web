@@ -69,6 +69,7 @@
 
   /* 두 폭 사이 값: 768에서 a, 1280 이상에서 b(피그마 1440 값). 사이는 직선이라 1024와 그 사이 폭이 저절로 맞는다 */
   function fv(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 768px) * ' + ((b - a) / 512).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; }
+  function fw(a, b) { return 'clamp(' + Math.min(a, b) + 'px, calc(' + a + 'px + (100vw - 1024px) * ' + ((b - a) / 256).toFixed(6) + '), ' + Math.max(a, b) + 'px)'; } /* 1024에서 a, 1280에서 b */
   /* 윅스 맞춤: 윅스는 에디터 높이를 host 최소 높이로 걸고(폭마다 내용 높이가 달라 푼다), 데스크톱 화면은 창이 980보다 좁아도 페이지를 980으로 고정한다(새 페이지가 떠 있을 때만 푼다, 옛 페이지는 980 기준이라 그대로) */
   var FIT_CSS = '@media (max-width:979.98px){body:not(.device-mobile-optimized){--site-width:100%!important}body:not(.device-mobile-optimized) [data-block-level-container="ClassicSection"]{min-width:0!important}}';
   function fitOn(el) { el.style.setProperty('min-height', '0', 'important'); el.style.setProperty('width', '100%', 'important'); /* 윅스 모바일이 거는 width:320px는 zoom에 같이 줄어든다 */ if (document.body.classList.contains('device-mobile-optimized') && el.parentElement) el.parentElement.style.setProperty('width', '100%', 'important'); window.__vdviaFit = (window.__vdviaFit || 0) + 1; if (!document.getElementById('vdvia-fit')) { var st = document.createElement('style'); st.id = 'vdvia-fit'; st.textContent = FIT_CSS; document.head.appendChild(st); } }
@@ -78,11 +79,14 @@
 
   /* 등장 애니메이션(구다이 글로벌 기준, 2026-11-06). 움직임 줄이기 설정, 에디터 미리보기(iframe)에서는 전부 바로 보인다. */
   var RV_EASE = 'cubic-bezier(.215,.61,.355,1)'; /* GSAP power2.out */
-  var MOTION_CSS = '.mk,.mi{display:block}@media (prefers-reduced-motion:no-preference){' +
+  var MOTION_CSS = '.mk,.mi,.ri{display:block}@media (prefers-reduced-motion:no-preference){' +
     '.rv{opacity:0;transition:opacity .8s ' + RV_EASE + ' var(--rv-d,0ms)}.rv.on{opacity:1}' +
     '.mk{clip-path:inset(-.12em -1em -.24em -1em)}.mk .mi{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.mk.on .mi{transform:none}' +
     '.d2{--rv-d:200ms}.d6{--rv-d:600ms}.d8{--rv-d:800ms}' +
-    '}@media print{.rv{opacity:1!important}.mk .mi{transform:none!important}}';
+    /* 목록 칸: 날짜, 제목, 설명이 메인 제목과 같은 가리개와 이동으로 0.1초씩 차례로 올라온다(2026-11-06 Sol "메인처럼"). 글자는 흐려지지 않고 칸 선만 나타난다. 가리개 상자는 글 높이로(칸 높이로 늘어나면 가린 글이 비친다) */
+    '.row.rv{opacity:1;transition:border-color .8s ' + RV_EASE + ' var(--rv-d,0ms)}.row.rv:not(.on){border-color:transparent}' +
+    '.row.rv .date,.row.rv .ttl,.row.rv .desc{align-self:start;clip-path:inset(-.12em -1em -.24em -1em)}.row.rv .ri{transform:translate3d(0,130%,0);transition:transform .4s ' + RV_EASE + ' var(--rv-d,0ms)}.row.rv .ttl .ri{transition-delay:calc(var(--rv-d,0ms) + 100ms)}.row.rv .desc .ri{transition-delay:calc(var(--rv-d,0ms) + 200ms)}.row.rv.on .ri{transform:none}' +
+    '}@media print{.rv{opacity:1!important}.mk .mi,.ri{transform:none!important}.row.rv:not(.on){border-color:rgba(20,20,20,.3)!important}}';
   /* 제목 한 줄: .mk가 가리개, .mi가 아래에서 올라온다 */
   function mk(cls, inner) { return '<span class="' + cls + ' mk hs"><span class="mi">' + inner + '</span></span>'; }
   function motionOn(root) {
@@ -145,6 +149,44 @@
     '@media (max-width:1023.98px){.in{margin:0 32px}}',
     /* 제목 강제 줄바꿈(U+2028)은 제목 열이 충분히 넓은 1101 이상에서만. 그 아래는 짧은 줄이 남아(검토 에이전트 800px 실측) 공백으로 잇는다 */
     '@media (max-width:1100.98px){.d{display:none}}',
+    /* 1281 이상: Sol 1920 Home 수정본의 규칙 */
+    '@media (min-width:1281px){',
+    '.ht .l1{top:-5px}.ht .l2{top:17.4px}',
+    '.year{font-size:82px;line-height:89px;letter-spacing:0;top:-9px}',
+    '.lead{letter-spacing:0}',
+    '.body{line-height:23px;letter-spacing:0}',
+    '.rows{margin-top:124.5px}',
+    '.row:first-child{border-top-color:rgba(20,20,20,.3)}',
+    '.row{border-bottom-color:rgba(20,20,20,.3)}',
+    '.desc{line-height:23px}',
+    '.gap2{height:162px}',
+    '}',
+    /* 1024~1280: Sol 1024 Home 수정본의 규칙 */
+    '@media (min-width:1024px) and (max-width:1280.98px){',
+    '.ht .l1{top:' + fw(-3.5, -5) + '}.ht .l2{top:' + fw(17, 17.4) + '}',
+    '.year{font-size:' + fw(72, 82) + ';line-height:' + fw(76, 89) + ';letter-spacing:' + fw(-0.72, 0) + ';top:' + fw(-8, -9) + '}',
+    '.lead{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.body{line-height:' + fw(24, 23) + ';letter-spacing:' + fw(-0.16, 0) + '}',
+    '.rows{margin-top:' + fw(127, 124.5) + '}',
+    '.lab{position:relative;top:1px}',
+    '.row:first-child{border-top-color:rgba(20,20,20,.3)}',
+    '.row{border-bottom-color:rgba(20,20,20,.3)}',
+    '.desc{line-height:23px}',
+    '.gap2{height:' + fw(120.5, 162) + '}',
+    '}',
+    /* 768~1023: Sol 768 Home 수정본의 규칙 */
+    '@media (min-width:768px) and (max-width:1023.98px){',
+    '.ht .l1{top:-.5em}.ht .l2{top:3px}',
+    '.year{top:-6px}',
+    '.year{line-height:1.05556}',
+    '.rows{margin-top:' + fv(72, 182) + '}',
+    '.lab{position:relative;top:1px}',
+    '.lead{line-height:26px}.body{line-height:23px;letter-spacing:0}',
+    '.row:first-child{border-top-color:rgba(20,20,20,.3)}',
+    '.row{border-bottom-color:rgba(20,20,20,.3)}',
+    '.desc{line-height:22px;letter-spacing:0;top:3px}',
+    '.gap2{height:139.06px}',
+    '}',
     /* 767 이하: 390 배치 */
     '@media (max-width:767.98px){',
     '.in{margin:0 29.25px}',
@@ -178,7 +220,7 @@
       '<div class="two"><p class="lead">' + br(D.lead) + '</p><p class="body">' + br(D.body) + '</p></div></div></section>' +
       '<div class="gap1" aria-hidden="true"></div>' +
       '<section class="list"><div class="in"><h2 class="year serif rv">' + esc(D.year) + '</h2><ol class="rows" role="list">' +
-      D.items.map(function (it) { var m = /^(\d{4})\.(\d{2})$/.exec(it[0]); return '<li class="row rv rs"><time class="date"' + (m ? ' datetime="' + m[1] + '-' + m[2] + '"' : '') + '>' + esc(it[0]) + '</time><h3 class="ttl">' + br(it[1]) + '</h3><p class="desc">' + br(it[2]) + '</p></li>'; }).join('') +
+      D.items.map(function (it) { var m = /^(\d{4})\.(\d{2})$/.exec(it[0]); return '<li class="row rv rs"><time class="date"' + (m ? ' datetime="' + m[1] + '-' + m[2] + '"' : '') + '><span class="ri">' + esc(it[0]) + '</span></time><h3 class="ttl"><span class="ri">' + br(it[1]) + '</span></h3><p class="desc"><span class="ri">' + br(it[2]) + '</span></p></li>'; }).join('') +
       '</ol></div></section><div class="gap2" aria-hidden="true"></div>';
   }
 
