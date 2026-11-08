@@ -24,7 +24,6 @@
     "Get in Touch",
     "Contact"
   ],
-  "label": "Contact",
   "lead": "For partnerships, products\nand careers, write to us.",
   "body": "Reach us through the contacts below \u2029or the form.",
   "rows": [
@@ -132,10 +131,10 @@
     '.ht .l2{font-size:' + fv(56, 94.04) + ';line-height:' + fv(56, 94.04) + ';position:relative;top:' + fv(6, 10) + '}',
     /* Contact */
     '.contact{min-height:' + fv(480, 552) + '}',
-    '.lab,.ftitle{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
+    '.ftitle{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
     '.rule{height:1px;background:#141414}',
     '.m{display:none}',
-    '.contact .in > .rule{margin-top:6px}',
+    '.contact .in{padding-top:32px}', /* 라벨을 지운 자리(26 + 6)를 비워 선과 아래 내용 위치를 유지, 2026-11-09 Sol */
     '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:' + fv(24, 30) + ';align-items:start}',
     '.info{grid-column:1}',
     '.lead{font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:var(--t23-dy,1px)}',
@@ -157,15 +156,15 @@
     '.f-email,.f-msg{margin-top:32px}',
     '.finput{display:block;width:100%;height:46px;margin:0;padding:10px 0;border:0;border-radius:0;background:transparent;outline:none;font-family:inherit;font-size:16px;line-height:26px;letter-spacing:-0.16px;color:#141414;-webkit-appearance:none;appearance:none}',
     'textarea.finput{height:124px;resize:none;overflow:auto}', /* 글 104 + 위아래 10(누를 수 있는 영역을 칸 전체로) */
-    '.fline{height:1px;background:#141414}',
-    '.field:focus-within .fline{box-shadow:0 1px 0 #141414}', /* 두께만 2px처럼, 배치는 그대로 */
+    '.fline{height:1px;background:rgba(20,20,20,.3)}',
+    '.field:focus-within .fline{background:#141414;box-shadow:0 1px 0 #141414}', /* 입력 중에는 진하게, 두께만 2px처럼, 배치는 그대로 */
     '.field.bad .fline{background:#b42318;box-shadow:0 1px 0 #b42318}',
     '.send-row{display:flex;align-items:center;gap:24px;margin-top:40px}',
-    '.send{flex:none;width:240px;height:48px;padding:0;border:1px solid #141414;border-radius:0;background:transparent;color:#141414;font-family:inherit;font-weight:600;font-size:16px;line-height:16px;letter-spacing:-0.16px;cursor:pointer;-webkit-appearance:none;appearance:none}',
+    '.send{flex:none;width:240px;height:48px;padding:0;border:1px solid #141414;border-radius:0;background:#141414;color:#fff;font-family:inherit;font-weight:600;font-size:16px;line-height:16px;letter-spacing:-0.16px;cursor:pointer;-webkit-appearance:none;appearance:none}',
     '.send span{position:relative;top:var(--send-dy,1px)}',
-    '@media (hover:hover){.send:hover{background:#141414;color:#fff}}',
-    '.send:focus-visible{background:#141414;color:#fff;outline:none}',
-    '.send[disabled]{opacity:.45;cursor:default;background:transparent;color:#141414}',
+    '@media (hover:hover){.send:hover{background:#fff;color:#141414}}',
+    '.send:focus-visible,.send:active{background:#fff;color:#141414;outline:none}', /* 터치 기기는 hover가 없어 누르는 동안 같은 모습 */
+    '.send[disabled]{opacity:.45;cursor:default;background:#141414;color:#fff}',
     '.status{min-height:18px}',
     '.status.err{color:#b42318}',
     '.hp{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}', /* 봇용 숨은 칸: 화면 밖으로 빼지 않고 잘라 숨긴다 */
@@ -208,8 +207,8 @@
     '.ht{position:static}',
     '.ht .l1{font-size:24px;line-height:28.5px;letter-spacing:0;top:0}',
     '.ht .l2{font-size:58px;line-height:55.5px;letter-spacing:-1.0725px;top:0;margin-top:23px}',
-    '.lab,.ftitle{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
-    '.contact .in > .rule{margin-top:6.7px}',
+    '.ftitle{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
+    '.contact .in{padding-top:38.3875px}',
     '.m{display:inline}',
     '.contact{min-height:0}',
     '.two{display:block;margin-top:25.8px}',
@@ -240,7 +239,7 @@
     var field = function (cls, id, label, input) { return '<div class="field ' + cls + '"><label class="flabel t13" for="' + id + '">' + esc(label) + '</label>' + input + '<div class="fline" aria-hidden="true"></div></div>'; };
     return '<style>' + CSS + '</style><div lang="en">' +
       '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif">' + mk('l1 d6', esc(D.hero[0])) + ' ' + mk('l2 d8', esc(D.hero[1])) + '</h1></div></section>' +
-      '<section class="contact rv"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
+      '<section class="contact rv"><div class="in"><div class="rule" role="presentation"></div>' +
       '<div class="two"><div class="info"><p class="lead">' + br(D.lead) + '</p><p class="t16 intro">' + br(D.body) + '</p><div class="rule r1" role="presentation"></div>' +
       '<dl class="rows">' + D.rows.map(function (r) { return '<dt class="t13">' + esc(r[0]) + '</dt><dd class="t16">' + (r[2] ? '<a href="' + esc(r[2]) + '">' + nw(r[1]) + '</a>' : nw(r[1])) + '</dd>'; }).join('') + '</dl>' +
       '<div class="rule r2" role="presentation"></div></div>' +
