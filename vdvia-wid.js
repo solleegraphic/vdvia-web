@@ -8,7 +8,7 @@
  *     룰 → 40 → 이미지 틀 1184 x 565(컨테이너 폭, 세로 이미지 1744 x 2336을 폭에 맞춰 넣고 틀로 자름) → 64 → 번호 16/19 180폭 가운데 | 제목 23/33 SemiBold 478폭 | 설명 16/23 #555 478폭 → 49 → 룰
  *     번호, 제목, 설명은 첫 줄 기준선을 맞춘다(보드에서 번호 10, 설명 6 내려 맞춘 것 = align-items:baseline). 큰 제목 기준선 → 첫 룰은 보드대로 약 82(이전 155.5).
  *     보드의 세 행 간격이 조금씩 달라(룰 → 이미지 37, 44, 42, 이미지 → 글 64, 57, 66) 평균에 가까운 40, 64로 통일. 보드의 이미지 왼쪽 7 들여쓰기(x 375, 폭 1177)는 컨테이너 폭 1184로 읽었다.
- *   이미지 팬(2026-11-10 Sol: 초안 세 방식 중 C 세워 두기를 먼저 라이브에 올려 보고 같은 날 B 빠르게로 바꿈): 틀이 화면을 지나가는 동안 이미지가 틀 안에서 위에서 아래로 내려간다(panOn). 데스크톱은 틀이 화면 가운데를 지나는 동안 한 번에(틀 안 속도 최대 1.75배, 이미지의 8~92%쯤이 화면에 나온다), 767 이하처럼 틀이 작은 화면은 틀이 온전히 보이는 동안 천천히 전부. 움직임 줄이기, 에디터 미리보기, 인쇄에서는 보드의 자리(--fc = 틀 가운데에 오는 이미지 높이 %)에 고정.
+ *   이미지 움직임(2026-11-10 Sol, 같은 날 C 세워 두기 → B 빠르게 → 자동 이동 순으로 바꿈): 기본은 자동 이동. 스크롤과 상관없이 사진이 틀 안에서 천천히 오르내린다(autoOn, 보드의 자리에서 출발, 검은 여백만 보이는 끝은 건너뜀). B(스크롤 따라 지나가기)와 C(세워 두기)는 보관해 두었고 주소에 ?pan=fast, ?pan=hold를 붙이거나 속성 pan으로 켠다(panOpt). 움직임 줄이기, 에디터 미리보기, 인쇄에서는 보드의 자리(--fc = 틀 가운데에 오는 이미지 높이 %)에 고정.
  * 폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1281 이상 컨테이너 1184 가운데(피그마 그대로). 1024~1280 좌우 48, 768~1023 좌우 32, 같은 배치에서 글자와 여백을 폭에 비례해 줄인다(fv()). 767 이하는 390 배치(좌우 29.25), 390보다 좁으면 zoom으로 그대로 줄인다(윅스 모바일 320 포함).
  * 768 이하(윅스 모바일 320 포함): News 모바일 규칙을 따른다. Three Differences는 320에서도 한 줄에 들어가게 폭 비례로 줄인다. 피그마에 모바일 보드가 없어 Claude가 정한 값.
  *   모바일 행은 Sol Home 390 보드의 Structure 칸과 같은 순서와 값: 룰 → 29.5 → 이미지 331.5 x 207 → 25 → 번호 → 25 → 제목 → 12.3 → 설명 → 41.8 → 룰.
@@ -38,19 +38,19 @@
       "I",
       "Science at the source.",
       "Our exosomes come from Zishel’s own patented platform, produced in its aseptic GMP facility. The science is invented and made inside our group.",
-      { "img": "wid_science", "fc": 52.64, "alt": "Microscopic view of exosome vesicles beside a cell" }
+      { "img": "wid_science", "fc": 52.64, "c": [0, 0.668], "alt": "Microscopic view of exosome vesicles beside a cell" }
     ],
     [
       "II",
       "Decided by data, \nexecuted by AI.",
       "VDVIA runs on a proprietary AI operating system we built in-house. It reads market data and consumer response across every market in real time, and carries every decision through to execution, from content and advertising to daily operations. We decide on evidence, not instinct, and move before the market does.",
-      { "img": "wid_data", "fc": 63.38, "alt": "A glowing processor chip with rising data charts above a circuit board" }
+      { "img": "wid_data", "fc": 63.38, "c": [0.382, 0.946], "alt": "A glowing processor chip with rising data charts above a circuit board" }
     ],
     [
       "III",
       "From research to retail, \nin one group.",
       "Zishel’s technology reaches 46+ countries through more than 59 partners. VDVIA turns that technology into brands and brings them directly to consumers worldwide. Between research and the market, there is no distance.",
-      { "img": "wid_global", "fc": 53.67, "alt": "Earth at night with connection lines radiating from Korea" }
+      { "img": "wid_global", "fc": 53.67, "c": [0.206, 0.963], "alt": "Earth at night with connection lines radiating from Korea" }
     ]
   ]
 };
@@ -111,14 +111,62 @@
   }
   /* 이미지 팬(2026-11-10 Sol "스크롤 시 위에서 아래로 이미지가 프레임 속에서 이동해, 이미지 전체가 보이도록").
      세로 이미지(틀 높이의 약 2.8배)가 틀 안에서 움직인다. 움직임 줄이기, 에디터 미리보기에서는 켜지 않아 CSS의 고정 자리(--fc)가 남는다.
-     제약: 이미지 아래 끝(위 끝)은 틀 아랫선(윗선)이 화면 안에 있을 때만 보인다. 그래서 전체를 보이려면 틀이 화면에 온전히 있는 동안(창 높이 - 틀 높이) 이동을 끝내야 하는데,
-     데스크톱은 틀(565)이 창 높이의 절반을 넘어 그 구간이 짧다(900 창에서 335, 이동 거리는 1021). 초안에서 세 방식(A slow 천천히, B fast 빠르게, C hold 세워 두기)을 견줬고,
-     Sol이 C를 먼저 라이브에 올려 보고 "막상 해보니 그렇게 좋아보이지 않습니다"라며 같은 날 B로 바꿨다. 기본은 B, C는 속성 pan="hold"로만 켠다:
-       지나가기(B, 기본)  틀이 화면을 지나가는 동안 이미지가 틀 안에서 아래로 내려간다(들어올 때 이미지 아래쪽, 나갈 때 위쪽).
+     같은 날 세 번 바뀌었다: C 세워 두기를 먼저 라이브에 올림 → Sol "C로 막상 해보니 그렇게 좋아보이지 않습니다" → B 빠르게 → Sol "자동으로 이미지가 이동하게 해줄래요? 이 시안은 킵하겠습니다" → 자동 이동.
+     기본은 자동 이동(auto)이고, B(fast)와 C(hold)는 지우지 않고 둔다. 방식은 panOpt가 고른다(주소의 ?pan=, 요소 속성 pan).
+       자동 이동(auto, 기본)  스크롤과 상관없이 사진이 틀 안에서 천천히 오르내린다(autoOn).
+       지나가기(B, fast)  틀이 화면을 지나가는 동안 이미지가 틀 안에서 아래로 내려간다(들어올 때 이미지 아래쪽, 나갈 때 위쪽).
          틀이 온전히 보이는 구간이 이동 거리보다 길면 그 구간에서 전부 지나가고(모바일 약 0.37배), 짧으면 틀이 화면 가운데를 지나는 동안 틀 안 속도 최대 1.75배로 한 번에 지나가 가운데 80~90%가 나온다.
-       세워 두기(C, pan="hold")  768 이상에서 행(틀과 글)을 화면에 세워 두고(sticky) 스크롤만큼 이미지가 틀 안에서 위로 올라가 위에서 아래 순서로 전부 지나간 뒤 행이 다시 올라간다. 행마다 스크롤이 이동 거리 / 1.25만큼 길어진다.
+         (제약: 이미지 아래 끝(위 끝)은 틀 아랫선(윗선)이 화면 안에 있을 때만 보인다. 데스크톱은 틀(565)이 창 높이의 절반을 넘어 스크롤로는 전체를 다 보이기 어렵다. 900 창에서 틀이 온전히 보이는 구간 335, 이동 거리 1021)
+       세워 두기(C, hold)  768 이상에서 행(틀과 글)을 화면에 세워 두고(sticky) 스크롤만큼 이미지가 틀 안에서 위로 올라가 위에서 아래 순서로 전부 지나간 뒤 행이 다시 올라간다. 행마다 스크롤이 이동 거리 / 1.25만큼 길어진다.
          자리: 행을 화면 가운데에. 창이 낮아 행이 다 안 들어오면 위 여백 16에 세우고 글 아래쪽은 이미지가 지나간 뒤 올라온다. 틀이 작아 지나가는 동안 다 보이는 창과 틀도 안 들어오는 창(틀 + 32 미만)은 세우지 않고 지나가기로 둔다 */
   var PASS_K = 1.75, HOLD_K = 1.25, HOLD_MIN = 16;
+  /* 방식 고르기. 주소의 ?pan=이 먼저(보관한 시안을 라이브에서 바로 보려고: fast = B, hold = C), 다음이 요소 속성 pan, 없으면 auto.
+     자동 이동의 빠르기와 범위도 같은 식으로: ?sec=(맨 위에서 맨 아래까지 가는 빠르기를 초로, 3~120) 또는 속성 pan-sec, ?full=1(검은 여백 끝까지) 또는 속성 pan-full */
+  function panOpt(el) {
+    var q = null; try { q = new URLSearchParams(window.location.search); } catch (e) { }
+    var get = function (k, attr) { return (q && q.get(k)) || el.getAttribute(attr) || ''; };
+    var mode = get('pan', 'pan'), sec = parseFloat(get('sec', 'pan-sec')), full = get('full', 'pan-full');
+    return { mode: mode === 'fast' || mode === 'hold' ? mode : 'auto', sec: sec >= 3 && sec <= 120 ? sec : 0, full: full === '1' || full === 'true' };
+  }
+  /* 자동 이동(2026-11-10 Sol "자동으로 이미지가 이동하게"). Web Animations로 transform만 움직여 스크롤과 따로 돈다.
+     범위: 사진 세 장 모두 위나 아래가 검은 여백이라(둘째 사진 맨 위는 틀 전체가 검다) 끝까지 가면 빈 틀이 오래 보인다. 사진마다 그림이 있는 줄의 처음과 끝(data-c, 이미지 높이 대비)을 재 두고,
+       틀 높이의 20%까지만 여백이 들어오는 자리에서 돌아선다. 그림이 있는 줄은 전부 지나간다. full이면 맨 위에서 맨 아래까지.
+     시작: 보드의 자리(--fc)에서, 먼저 사진이 아래로 내려가는 쪽으로. 끝에서 천천히 멈췄다가 되돌아온다(사인 곡선에 가까운 가감속, 끝없이 왕복).
+     빠르기: 맨 위에서 맨 아래까지 sec초(768 이상 20, 767 이하 10)에 가는 빠르기로 세 장이 같다. 범위가 짧은 사진은 그만큼 일찍 돌아선다.
+     틀이 절반 이상 보이면 움직이고(행이 나타난 뒤라 보드의 자리가 먼저 보인다) 화면 밖으로 다 나가면 멈춘다(다시 들어오면 멈춘 자리에서 잇는다).
+     열어 둔 채 움직임 줄이기를 켜면 고정 자리로 돌아간다. 멈춤 버튼은 없다(계속 움직이는 그림에 멈춤 수단을 두라는 WCAG 2.2.2에는 못 미친다, Sol 결정 사항) */
+  var IMG_R = 2336 / 1744, FRAME_R = [565 / 1184, 224 / 358.67], AUTO_SEC = [20, 10], AUTO_GAP = 0.2, AUTO_SEEN = 0.5; /* 사진 세로/가로, 틀 세로/가로(768 이상, 767 이하: CSS의 aspect-ratio와 같은 값) */
+  function autoOn(rows, opt) {
+    if (!window.IntersectionObserver || !rows[0].fig.firstElementChild.animate) return null;
+    var mq = window.matchMedia('(max-width:767.98px)'), rm = window.matchMedia('(prefers-reduced-motion:reduce)'), dead = false;
+    var build = function () {
+      if (dead) return;
+      if (rm.matches) { rows.forEach(function (o) { if (o.anim) { o.anim.cancel(); o.anim = null; } o.fig.classList.remove('auto'); }); return; }
+      var k = mq.matches ? 1 : 0, f = FRAME_R[k] / IMG_R, full = 1 - f, sec = opt.sec || AUTO_SEC[k]; /* f = 틀 높이 / 이미지 높이, 자리는 틀 윗선이 이미지의 어디에 오는지(0 ~ full) */
+      rows.forEach(function (o) {
+        var img = o.fig.firstElementChild, c = (o.fig.getAttribute('data-c') || '0,1').split(','), fc = parseFloat(o.fig.getAttribute('data-fc')) / 100 || 0.5;
+        var A = opt.full ? 0 : Math.max(0, +c[0] - AUTO_GAP * f), B = opt.full ? full : Math.min(full, +c[1] + AUTO_GAP * f - f);
+        if (o.anim) { o.anim.cancel(); o.anim = null; }
+        if (!(B > A + 0.01)) { o.fig.classList.remove('auto'); return; } /* 움직일 범위가 없으면 고정 자리 그대로 */
+        var p0 = (Math.min(B, Math.max(A, fc - f / 2)) - A) / (B - A), t0 = Math.acos(1 - 2 * p0) / Math.PI; /* 보드의 자리가 범위의 어디인지, 사인 곡선에서 그 자리에 오는 때 */
+        o.fig.classList.add('auto');
+        o.anim = img.animate([{ transform: 'translate3d(0,' + (-A * 100).toFixed(3) + '%,0)' }, { transform: 'translate3d(0,' + (-B * 100).toFixed(3) + '%,0)' }],
+          { duration: Math.max(3, sec * (B - A) / full) * 1000, iterations: Infinity, direction: 'alternate-reverse', iterationStart: 1 - t0, easing: 'cubic-bezier(.37,0,.63,1)' }); /* 거꾸로 먼저: 보드의 자리에서 위쪽 끝(A)으로, 사진은 아래로 내려간다 */
+        if (!o.fig.classList.contains('go')) o.anim.pause();
+      });
+    };
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        var o = rows.filter(function (r) { return r.fig === e.target; })[0];
+        if (e.intersectionRatio >= AUTO_SEEN) { e.target.classList.add('go'); if (o && o.anim) o.anim.play(); }
+        else if (!e.isIntersecting) { e.target.classList.remove('go'); if (o && o.anim) o.anim.pause(); }
+      });
+    }, { threshold: [0, AUTO_SEEN] });
+    build();
+    rows.forEach(function (o) { io.observe(o.fig); });
+    [mq, rm].forEach(function (m) { if (m.addEventListener) m.addEventListener('change', build); else if (m.addListener) m.addListener(build); }); /* 틀 비율과 빠르기는 767을 넘나들 때, 켜고 끄기는 움직임 줄이기 설정이 바뀔 때 */
+    return function () { dead = true; io.disconnect(); [mq, rm].forEach(function (m) { if (m.removeEventListener) m.removeEventListener('change', build); else if (m.removeListener) m.removeListener(build); }); rows.forEach(function (o) { if (o.anim) { o.anim.cancel(); o.anim = null; } }); };
+  }
   /* 세워 두기는 가장 가까운 스크롤 조상이 창일 때만 된다. 윅스가 감싼 상자 중 하나라도 overflow가 걸려 있으면(예: overflow:clip을 모르는 브라우저의 hidden) 늘린 스크롤만 빈 채로 남으므로 세우지 않는다 */
   function canStick(el) {
     if (!(window.CSS && window.CSS.supports && window.CSS.supports('position', 'sticky'))) return false; /* 이 파일 안의 CSS는 스타일 문자열이라 window.CSS로 부른다 */
@@ -130,11 +178,12 @@
     }
     return true;
   }
-  function panOn(root, mode) {
+  function panOn(root, opt) {
     var rows = [].slice.call(root.querySelectorAll('.row')).map(function (row) { return { row: row, fig: row.querySelector('.fig'), hold: row.querySelector('.hold'), stick: row.querySelector('.stick') }; }).filter(function (o) { return o.fig; });
     var live = window.self === window.top && window.requestAnimationFrame && window.matchMedia('(prefers-reduced-motion:no-preference)').matches;
     if (!live || !rows.length) return null;
-    var raf = 0, dead = false, lw = 0, lh = 0, wide = window.matchMedia('(min-width:768px)'), coarse = window.matchMedia('(pointer:coarse)');
+    if (opt.mode === 'auto') return autoOn(rows, opt);
+    var mode = opt.mode, raf = 0, dead = false, lw = 0, lh = 0, wide = window.matchMedia('(min-width:768px)'), coarse = window.matchMedia('(pointer:coarse)');
     var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
     var setup = function () { /* 창 크기에 맞춰 세워 둘 자리와 길이를 다시 잡는다 */
       var vh = window.innerHeight, pin = mode === 'hold' && wide.matches && canStick(rows[0].hold);
@@ -206,7 +255,7 @@
     /* 이미지 틀: 컨테이너 폭, 1184 x 565 비율. 세로 이미지는 폭에 맞추고 틀이 자른다. 고정 자리는 이미지의 --fc 지점이 틀 가운데에 오게 */
     '.fig{position:relative;overflow:hidden;aspect-ratio:1184/565;background:#0b0b0b}',
     '.fimg{position:absolute;left:0;top:50%;display:block;width:100%;height:auto;transform:translate3d(0,calc(var(--fc,50%) * -1),0)}',
-    '.fig.pan .fimg{top:0;will-change:transform}',
+    '.fig.pan .fimg,.fig.auto .fimg{top:0;will-change:transform}', /* pan = 스크롤 따라(B, C), auto = 자동 이동. 움직임은 panOn, autoOn이 transform으로 */
     '.row.hd .stick{position:sticky}', /* 세워 두기(pan="hold"일 때만): 자리(top)와 길이(.hold 높이)는 panOn이 창 크기에 맞춰 넣는다 */
     /* 글 줄: 번호 | 제목 | 설명, 첫 줄 기준선을 맞춘다(Sol 11/10 보드) */
     '.rt{display:grid;grid-template-columns:minmax(0,180fr) ' + fv(32, 24) + ' minmax(0,478fr) ' + fv(32, 24) + ' minmax(0,478fr);align-items:baseline;margin-top:' + fv(42, 64) + '}',
@@ -284,7 +333,7 @@
 
   var SIZES = '(max-width:767.98px) calc(100vw - 58.5px), (max-width:1023.98px) calc(100vw - 64px), (max-width:1280.98px) calc(100vw - 96px), 1184px';
   function fig(m, base) {
-    return '<figure class="fig"><img class="fimg" src="' + esc(base + m.img + '.jpg') + '" srcset="' + esc(base + m.img + '_1000.jpg') + ' 1000w, ' + esc(base + m.img + '.jpg') + ' 1744w" sizes="' + SIZES + '" width="1744" height="2336" alt="' + esc(m.alt) + '" loading="lazy" decoding="async" style="--fc:' + m.fc + '%"></figure>';
+    return '<figure class="fig" data-fc="' + m.fc + '" data-c="' + m.c.join(',') + '"><img class="fimg" src="' + esc(base + m.img + '.jpg') + '" srcset="' + esc(base + m.img + '_1000.jpg') + ' 1000w, ' + esc(base + m.img + '.jpg') + ' 1744w" sizes="' + SIZES + '" width="1744" height="2336" alt="' + esc(m.alt) + '" loading="lazy" decoding="async" style="--fc:' + m.fc + '%"></figure>';
   }
   function html(D, base) {
     return '<style>' + CSS + '</style><div lang="en">' +
@@ -299,13 +348,13 @@
 
   class VdviaWid extends HTMLElement {
     constructor() { super(); this.attachShadow({ mode: 'open' }); }
-    static get observedAttributes() { return ['img-base', 'pan']; }
+    static get observedAttributes() { return ['img-base', 'pan', 'pan-sec', 'pan-full']; }
     connectedCallback() { fitOn(this); injectFonts(); this._render(); }
     disconnectedCallback() { fitOff(); if (this._mo) this._mo.disconnect(); if (this._pan) { this._pan(); this._pan = null; } }
     attributeChangedCallback() { if (this.isConnected && this.shadowRoot.firstChild) this._render(); } /* 떼어 낸 뒤에는 다시 그리지 않는다(창 리스너가 남는다). 다시 붙으면 connectedCallback이 그린다 */
     _render() {
       this.shadowRoot.innerHTML = html(DATA, (this.getAttribute('img-base') || IMG_BASE).replace(/\/?$/, '/')); /* 끝 슬래시가 없어도 되게 */
-      if (this._pan) this._pan(); this._pan = panOn(this.shadowRoot, this.getAttribute('pan') || 'fast'); /* 기본 B 지나가기(2026-11-10 Sol이 C를 라이브에서 보고 바꿈). pan="hold"면 C 세워 두기. 세우면 행이 길어지므로 등장 판정보다 먼저 */
+      if (this._pan) this._pan(); this._pan = panOn(this.shadowRoot, panOpt(this)); /* 기본 자동 이동(2026-11-10 Sol). 보관한 시안은 ?pan=fast(B), ?pan=hold(C) 또는 속성 pan. C는 행이 길어지므로 등장 판정보다 먼저 */
       if (this._mo) this._mo.disconnect(); this._mo = motionOn(this.shadowRoot);
     }
   }
