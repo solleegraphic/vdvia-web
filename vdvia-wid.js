@@ -2,7 +2,7 @@
  * 정본: Figma [VDVIA] Design › 'VDVIA What is Different EN 1440 (PC)_sol 수정_3' (섹션 1209:2629, 보드 1209:2630). 문구는 피그마에서 노드 아이디로 자동 추출.
  * 배치는 News 페이지(vdvia-news.js)와 같다. 1440 기준 헤더(64) 아래 1978:
  *   히어로 440: What is 39.12 / Different 94.04, Adobe Garamond 400, 줄높이 100%, 자간 -2%, 글상자 위 264
- *   소개 167: 라벨 Difference 16/26 Bold, 룰(라벨 위에서 32), 리드 23/33 SemiBold 480폭 + 본문 16/26 592폭(x 720), 룰 아래 30
+ *   소개 167: 룰(위에서 32, 라벨 Difference는 2026-11-10 Sol 지시로 지우고 자리만 유지), 리드 23/33 SemiBold 480폭 + 본문 16/26 592폭(x 720), 룰 아래 30
  *   여백 200 → 행 991: Three Differences 90px Garamond 86%(두 줄이라 줄 77, 피그마 정수 반올림) -1%, 제목 아래 191에 첫 룰,
  *   행 = 룰 → 55 → 번호 16/19 180폭 | 제목 23/33 SemiBold 478폭(x 332) | 설명 16/26 #555 478폭(x 834) → 55 → 룰, 끝 여백 180
  * 폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1281 이상 컨테이너 1184 가운데(피그마 그대로). 1024~1280 좌우 48, 768~1023 좌우 32, 같은 배치에서 글자와 여백을 폭에 비례해 줄인다(fv()). 767 이하는 390 배치(좌우 29.25), 390보다 좁으면 zoom으로 그대로 줄인다(윅스 모바일 320 포함).
@@ -23,7 +23,6 @@
     "What is",
     "Different"
   ],
-  "label": "Difference",
   "lead": "A bio company stands \u2028behind every brand we build.",
   "body": "VDVIA is a subsidiary of Zishel, a Korean regenerative-medicine company \u2028founded in 2008. Zishel researches and produces the active ingredients. \nVDVIA builds the brands and takes them to the world. That parent company is what makes us different.",
   "display": "Three\nDifferences",
@@ -114,9 +113,8 @@
     '.ht .l1{font-size:' + fv(24, 39.12) + ';line-height:' + fv(24, 39.12) + ';position:relative;top:' + fv(-1, -2) + '}',
     '.ht .l2{font-size:' + fv(56, 94.04) + ';line-height:' + fv(56, 94.04) + ';position:relative;top:' + fv(6, 10) + '}',
     /* 소개 */
-    '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}', /* 기준선을 피그마에 맞춤(홈, Brand와 같은 보정) */
+    '.intro .in{padding-top:32px}', /* 라벨을 지운 자리(26 + 6)를 비워 선과 아래 내용 위치를 유지, 2026-11-10 Sol */
     '.rule{height:1px;background:#141414}',
-    '.intro .rule{margin-top:6px}',
     '.two{display:grid;grid-template-columns:minmax(0,480fr) minmax(0,112fr) minmax(0,592fr);margin-top:' + fv(24, 30) + '}',
     /* Pretendard 실측 보정(피그마 대비): 23/33은 1px, 16/26은 2px 아래로. 배치에는 영향 없음 */
     '.lead{grid-column:1;font-weight:600;font-size:' + fv(20, 23) + ';line-height:' + fv(29, 33) + ';position:relative;top:var(--t23-dy,1px)}',
@@ -155,7 +153,6 @@
     '.lead{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
     '.body{line-height:' + fw(24, 23) + ';letter-spacing:' + fw(-0.16, 0) + '}',
     '.rows{margin-top:' + fw(127, 124.5) + '}',
-    ':host{--lab-dy:2px}',
     '.row:first-child{border-top-color:rgba(20,20,20,.3)}',
     '.row{border-bottom-color:rgba(20,20,20,.3)}',
     '.desc{line-height:23px}',
@@ -167,7 +164,6 @@
     '.disp{top:-6px}',
     '.disp{line-height:1.05556}',
     '.rows{margin-top:' + fv(72, 182) + '}',
-    ':host{--lab-dy:2px}',
     '.lead{line-height:26px}.body{line-height:23px;letter-spacing:0}',
     '.row:first-child{border-top-color:rgba(20,20,20,.3)}',
     '.row{border-bottom-color:rgba(20,20,20,.3)}',
@@ -181,8 +177,7 @@
     '.ht{position:static}',
     '.ht .l1{font-size:24px;line-height:28.5px;letter-spacing:0;top:0}',
     '.ht .l2{font-size:58px;line-height:55.5px;letter-spacing:-1.0725px;top:0;margin-top:23px}',
-    '.lab{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
-    '.intro .rule{margin-top:6.7px}',
+    '.intro .in{padding-top:38.3875px}',
     '.two{display:block;margin-top:25.8px}',
     '.lead{font-size:21.5px;line-height:30.5px;letter-spacing:-.195px;top:0;text-wrap:balance}',
     '.body{margin-top:39.8px;font-size:18px;line-height:26px;letter-spacing:-.195px;top:0}',
@@ -203,7 +198,7 @@
   function html(D) {
     return '<style>' + CSS + '</style><div lang="en">' +
       '<section class="hero"><div class="in" style="position:relative;height:100%"><h1 class="ht serif">' + mk('l1 d6', esc(D.hero[0])) + ' ' + mk('l2 d8', esc(D.hero[1])) + '</h1></div></section>' +
-      '<section class="intro rv"><div class="in"><p class="lab">' + esc(D.label) + '</p><div class="rule" role="presentation"></div>' +
+      '<section class="intro rv"><div class="in"><div class="rule" role="presentation"></div>' +
       '<div class="two"><p class="lead">' + br(D.lead) + '</p><p class="body">' + br(D.body) + '</p></div></div></section>' +
       '<div class="gap1" aria-hidden="true"></div>' +
       '<section class="list"><div class="in"><h2 class="disp serif rv">' + br(D.display) + '</h2><ol class="rows" role="list">' +

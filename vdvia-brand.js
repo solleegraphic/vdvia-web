@@ -1,7 +1,7 @@
 /* VDVIA Brand 페이지 웹 컴포넌트 <vdvia-brand>  (2026-11-05)
  * 정본: Figma [VDVIA] Design › 'VDVIA Brand EN 1440 (PC)_sol 수정_3' (섹션 1209:2509, 보드 1209:2510). 문구는 피그마에서 노드 아이디로 자동 추출.
  * 1440 기준 헤더(64) 아래 1619.32: 여백 116 | Brands 1323.32 | 여백 180
- *   라벨 16/26 Bold → 6 → 룰 둘(왼쪽 378.67, 오른쪽은 피그마 그대로 x 531에서 782폭) → 디스플레이 82 Garamond 105%(줄 86) 2줄(룰 아래 21)
+ *   위 32(라벨 Brands는 2026-11-10 Sol 지시로 지우고 자리만 유지) → 룰 둘(왼쪽 378.67, 오른쪽은 피그마 그대로 x 531에서 782폭) → 디스플레이 82 Garamond 105%(줄 86) 2줄(룰 아래 21)
  *   | 오른쪽 23/33 SemiBold(룰 아래 31) + Helvetica 16/26 #555(18 아래)
  *   → 312 → 브랜드 둘(x 530.67, 폭 781.33): 로고 → 룰(레몬더마 25, 쏘마지 코스메틱 14 아래) → 16 → 사진 378.67 | 24 | 글 378.67(Pretendard 16/26 → 8 → Helvetica 16/26 #555), 두 브랜드 사이 110
  * 사진 2장(2배 JPG)과 로고 2장(3배 PNG)은 피그마 노드를 그대로 내보낸 것. 기본 주소 IMG_BASE, 속성 img-base로 바꾼다.
@@ -21,7 +21,6 @@
     ['vdvia-font-garamond', 'https://use.typekit.net/cle2qyf.css']
   ];
   var DATA = {
-  "label": "Brands",
   "title": "Our\nBrands",
   "lead": "Where science becomes ritual.",
   "body": "Each VDVIA brand begins in the laboratory and ends in your daily ritual. Crafted with precision, made for skin that deserves more.",
@@ -117,8 +116,7 @@
     '.m{display:none}',
     '.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:' + fv(16, 24) + '}', /* 1184 = 378.67 x 3 + 24 x 2 */
     '.gap116{height:' + fv(64, 116) + '}.gap180{height:' + fv(110, 180) + '}',
-    '.lab{font-weight:700;font-size:16px;line-height:26px;position:relative;top:var(--lab-dy,1px)}',
-    '.rules{margin-top:6px}',
+    '.brands .in{padding-top:32px}', /* 라벨을 지운 자리(26 + 6)를 비워 선과 아래 내용 위치를 유지, 2026-11-10 Sol */
     /* 피그마는 위쪽 오른쪽 룰과 글을 x 531에서 782폭(1313까지)으로 둔다. 아래 브랜드 칸(530.67, 781.33)과 0.33px, 1px 다른 것까지 그대로 */
     '.rules .rule:last-child,.top .r{grid-column:2/4;margin-left:.33px;margin-right:-1px}',
     '.top{align-items:start}',
@@ -156,7 +154,7 @@
     /* 1024~1280: Sol 1024 Home 수정본의 규칙 */
     '@media (min-width:1024px) and (max-width:1280.98px){',
     '.disp{line-height:' + fw(73.5, 89) + ';letter-spacing:0;top:' + fw(-8, -10) + '}',
-    ':host{--lab-dy:2px;--helv-dy:2px}',
+    ':host{--helv-dy:2px}',
     '.t23{line-height:' + fw(29, 33) + ';letter-spacing:' + fw(-0.16, 0) + '}',
     '.helv{line-height:' + fw(24, 23) + ';letter-spacing:' + fw(-0.16, 0) + '}',
     '.txt .t16{line-height:23px}',
@@ -166,7 +164,7 @@
     /* 768~1023: Sol 768 Home 수정본의 규칙 */
     '@media (min-width:768px) and (max-width:1023.98px){',
     '.disp{line-height:1.11224;letter-spacing:0;top:-5.5px}',
-    ':host{--lab-dy:2px;--helv-dy:3px}',
+    ':host{--helv-dy:3px}',
     '.t23{line-height:26px}.helv{line-height:23px}',
     '.list{margin-top:calc(' + fv(110, 312) + ' - 5px)}',
     '.txt .t16{line-height:22px;letter-spacing:0;top:3px}',
@@ -178,8 +176,7 @@
     '.m{display:inline}',
     '.gap116{height:97.5px}',
     '.g3,.brand{display:block}',
-    '.lab{font-size:19.5px;line-height:31.6875px;letter-spacing:-.195px;top:0}',
-    '.rules{margin-top:6.7px}',
+    '.brands .in{padding-top:38.3875px}',
     '.rules .rule:first-child{display:none}',
     '.rules .rule:last-child,.top .r{margin-left:0;margin-right:0}',
     '.disp{font-size:55.5px;line-height:64px;letter-spacing:-.585px;top:0;white-space:normal;margin-top:25.8px}',
@@ -202,7 +199,6 @@
     return '<style>' + CSS + '</style>' +
       '<div class="gap116" aria-hidden="true"></div>' +
       '<section class="brands" lang="en" aria-labelledby="vb-title"><div class="in">' +
-      '<p class="lab rv hs">' + esc(D.label) + '</p>' +
       '<div class="g3 rules rv hs" role="presentation"><div class="rule"></div><div class="rule"></div></div>' +
       '<div class="g3 top"><h1 class="disp serif" id="vb-title">' + D.title.split(/\u2028|\n/).map(function (t, i) { return mk(i ? 'd8' : 'd6', esc(t.trim())); }).join(' ') + '</h1><div class="r rv hs d2"><p class="t23">' + lines(D.lead) + '</p><p class="helv">' + lines(D.body) + '</p></div></div>' +
       '<ul class="g3 list" role="list">' + D.brands.map(function (b, i) {
