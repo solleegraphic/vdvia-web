@@ -8,7 +8,7 @@
  *     룰 → 40 → 이미지 틀 1184 x 565(컨테이너 폭, 세로 이미지 1744 x 2336을 폭에 맞춰 넣고 틀로 자름) → 64 → 번호 16/19 180폭 가운데 | 제목 23/33 SemiBold 478폭 | 설명 16/23 #555 478폭 → 49 → 룰
  *     번호, 제목, 설명은 첫 줄 기준선을 맞춘다(보드에서 번호 10, 설명 6 내려 맞춘 것 = align-items:baseline). 큰 제목 기준선 → 첫 룰은 보드대로 약 82(이전 155.5).
  *     보드의 세 행 간격이 조금씩 달라(룰 → 이미지 37, 44, 42, 이미지 → 글 64, 57, 66) 평균에 가까운 40, 64로 통일. 보드의 이미지 왼쪽 7 들여쓰기(x 375, 폭 1177)는 컨테이너 폭 1184로 읽었다.
- *   이미지 팬(2026-11-10 Sol이 초안 세 방식 중 C 세워 두기로 확정): 768 이상에서는 행(틀과 글)을 화면에 세워 두고 스크롤만큼 이미지가 위에서 아래까지 전부 지나간 뒤 다시 내려간다. 767 이하와 틀이 작은 화면은 세우지 않고 틀이 화면을 지나가는 동안 전부 지나간다(panOn). 움직임 줄이기, 에디터 미리보기, 인쇄에서는 보드의 자리(--fc = 틀 가운데에 오는 이미지 높이 %)에 고정.
+ *   이미지 팬(2026-11-10 Sol: 초안 세 방식 중 C 세워 두기를 먼저 라이브에 올려 보고 같은 날 B 빠르게로 바꿈): 틀이 화면을 지나가는 동안 이미지가 틀 안에서 위에서 아래로 내려간다(panOn). 데스크톱은 틀이 화면 가운데를 지나는 동안 한 번에(틀 안 속도 최대 1.75배, 이미지의 8~92%쯤이 화면에 나온다), 767 이하처럼 틀이 작은 화면은 틀이 온전히 보이는 동안 천천히 전부. 움직임 줄이기, 에디터 미리보기, 인쇄에서는 보드의 자리(--fc = 틀 가운데에 오는 이미지 높이 %)에 고정.
  * 폭(2026-11-06 Sol, 1920, 1440, 1024, 768, 390): 1281 이상 컨테이너 1184 가운데(피그마 그대로). 1024~1280 좌우 48, 768~1023 좌우 32, 같은 배치에서 글자와 여백을 폭에 비례해 줄인다(fv()). 767 이하는 390 배치(좌우 29.25), 390보다 좁으면 zoom으로 그대로 줄인다(윅스 모바일 320 포함).
  * 768 이하(윅스 모바일 320 포함): News 모바일 규칙을 따른다. Three Differences는 320에서도 한 줄에 들어가게 폭 비례로 줄인다. 피그마에 모바일 보드가 없어 Claude가 정한 값.
  *   모바일 행은 Sol Home 390 보드의 Structure 칸과 같은 순서와 값: 룰 → 29.5 → 이미지 331.5 x 207 → 25 → 번호 → 25 → 제목 → 12.3 → 설명 → 41.8 → 룰.
@@ -112,11 +112,12 @@
   /* 이미지 팬(2026-11-10 Sol "스크롤 시 위에서 아래로 이미지가 프레임 속에서 이동해, 이미지 전체가 보이도록").
      세로 이미지(틀 높이의 약 2.8배)가 틀 안에서 움직인다. 움직임 줄이기, 에디터 미리보기에서는 켜지 않아 CSS의 고정 자리(--fc)가 남는다.
      제약: 이미지 아래 끝(위 끝)은 틀 아랫선(윗선)이 화면 안에 있을 때만 보인다. 그래서 전체를 보이려면 틀이 화면에 온전히 있는 동안(창 높이 - 틀 높이) 이동을 끝내야 하는데,
-     데스크톱은 틀(565)이 창 높이의 절반을 넘어 그 구간이 짧다(900 창에서 335, 이동 거리는 1021). 그래서 세워 둔다(Sol이 초안의 slow, fast, hold 세 방식 중 hold로 확정):
-       세워 두기  행(틀과 글)을 화면에 세워 두고(sticky) 스크롤만큼 이미지가 틀 안에서 위로 올라가 위에서 아래 순서로 전부 지나간 뒤 행이 다시 올라간다. 행마다 스크롤이 이동 거리 / 1.25만큼 길어진다.
-         자리: 행을 화면 가운데에. 창이 낮아 행이 다 안 들어오면 위 여백 16에 세우고 글 아래쪽은 이미지가 지나간 뒤 올라온다. 틀도 안 들어오는 창(틀 + 32 미만)은 세우지 않는다.
-       지나가기  세우지 않는 화면(767 이하, 틀이 작아 지나가는 동안 다 보이는 창, 아주 낮은 창, 속성 pan="fast")은 틀이 화면을 지나가는 동안 이미지가 틀 안에서 아래로 내려간다(들어올 때 이미지 아래쪽, 나갈 때 위쪽).
-         틀이 온전히 보이는 구간이 이동 거리보다 길면 그 구간에서 전부 지나가고(모바일 약 0.37배), 짧으면 틀 안 속도 최대 1.75배로 가운데 80~90%가 나온다 */
+     데스크톱은 틀(565)이 창 높이의 절반을 넘어 그 구간이 짧다(900 창에서 335, 이동 거리는 1021). 초안에서 세 방식(A slow 천천히, B fast 빠르게, C hold 세워 두기)을 견줬고,
+     Sol이 C를 먼저 라이브에 올려 보고 "막상 해보니 그렇게 좋아보이지 않습니다"라며 같은 날 B로 바꿨다. 기본은 B, C는 속성 pan="hold"로만 켠다:
+       지나가기(B, 기본)  틀이 화면을 지나가는 동안 이미지가 틀 안에서 아래로 내려간다(들어올 때 이미지 아래쪽, 나갈 때 위쪽).
+         틀이 온전히 보이는 구간이 이동 거리보다 길면 그 구간에서 전부 지나가고(모바일 약 0.37배), 짧으면 틀이 화면 가운데를 지나는 동안 틀 안 속도 최대 1.75배로 한 번에 지나가 가운데 80~90%가 나온다.
+       세워 두기(C, pan="hold")  768 이상에서 행(틀과 글)을 화면에 세워 두고(sticky) 스크롤만큼 이미지가 틀 안에서 위로 올라가 위에서 아래 순서로 전부 지나간 뒤 행이 다시 올라간다. 행마다 스크롤이 이동 거리 / 1.25만큼 길어진다.
+         자리: 행을 화면 가운데에. 창이 낮아 행이 다 안 들어오면 위 여백 16에 세우고 글 아래쪽은 이미지가 지나간 뒤 올라온다. 틀이 작아 지나가는 동안 다 보이는 창과 틀도 안 들어오는 창(틀 + 32 미만)은 세우지 않고 지나가기로 둔다 */
   var PASS_K = 1.75, HOLD_K = 1.25, HOLD_MIN = 16;
   /* 세워 두기는 가장 가까운 스크롤 조상이 창일 때만 된다. 윅스가 감싼 상자 중 하나라도 overflow가 걸려 있으면(예: overflow:clip을 모르는 브라우저의 hidden) 늘린 스크롤만 빈 채로 남으므로 세우지 않는다 */
   function canStick(el) {
@@ -136,7 +137,7 @@
     var raf = 0, dead = false, lw = 0, lh = 0, wide = window.matchMedia('(min-width:768px)'), coarse = window.matchMedia('(pointer:coarse)');
     var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
     var setup = function () { /* 창 크기에 맞춰 세워 둘 자리와 길이를 다시 잡는다 */
-      var vh = window.innerHeight, pin = mode !== 'fast' && wide.matches && canStick(rows[0].hold);
+      var vh = window.innerHeight, pin = mode === 'hold' && wide.matches && canStick(rows[0].hold);
       rows.forEach(function (o) { o.fh = o.fig.offsetHeight; o.tr = o.fig.firstElementChild.offsetHeight - o.fh; o.bh = o.stick.offsetHeight; }); /* 먼저 전부 재고 나서 고친다 */
       rows.forEach(function (o) {
         var ok = pin && o.tr > vh - o.fh && vh >= o.fh + HOLD_MIN * 2; /* 지나가는 동안 다 못 보이는 틀만, 틀이 온전히 들어오는 창에서 세운다 */
@@ -206,7 +207,7 @@
     '.fig{position:relative;overflow:hidden;aspect-ratio:1184/565;background:#0b0b0b}',
     '.fimg{position:absolute;left:0;top:50%;display:block;width:100%;height:auto;transform:translate3d(0,calc(var(--fc,50%) * -1),0)}',
     '.fig.pan .fimg{top:0;will-change:transform}',
-    '.row.hd .stick{position:sticky}', /* 세워 두기: 자리(top)와 길이(.hold 높이)는 panOn이 창 크기에 맞춰 넣는다 */
+    '.row.hd .stick{position:sticky}', /* 세워 두기(pan="hold"일 때만): 자리(top)와 길이(.hold 높이)는 panOn이 창 크기에 맞춰 넣는다 */
     /* 글 줄: 번호 | 제목 | 설명, 첫 줄 기준선을 맞춘다(Sol 11/10 보드) */
     '.rt{display:grid;grid-template-columns:minmax(0,180fr) ' + fv(32, 24) + ' minmax(0,478fr) ' + fv(32, 24) + ' minmax(0,478fr);align-items:baseline;margin-top:' + fv(42, 64) + '}',
     '.num{grid-column:1;font-size:16px;line-height:19px;text-align:center;position:relative;top:var(--t23-dy,1px)}', /* 첫 열 가운데, 제목과 같은 1px 보정 */
@@ -304,7 +305,7 @@
     attributeChangedCallback() { if (this.isConnected && this.shadowRoot.firstChild) this._render(); } /* 떼어 낸 뒤에는 다시 그리지 않는다(창 리스너가 남는다). 다시 붙으면 connectedCallback이 그린다 */
     _render() {
       this.shadowRoot.innerHTML = html(DATA, (this.getAttribute('img-base') || IMG_BASE).replace(/\/?$/, '/')); /* 끝 슬래시가 없어도 되게 */
-      if (this._pan) this._pan(); this._pan = panOn(this.shadowRoot, this.getAttribute('pan') || 'hold'); /* 기본 세워 두기(2026-11-10 Sol 확정). pan="fast"면 세우지 않는다. 세우면 행이 길어지므로 등장 판정보다 먼저 */
+      if (this._pan) this._pan(); this._pan = panOn(this.shadowRoot, this.getAttribute('pan') || 'fast'); /* 기본 B 지나가기(2026-11-10 Sol이 C를 라이브에서 보고 바꿈). pan="hold"면 C 세워 두기. 세우면 행이 길어지므로 등장 판정보다 먼저 */
       if (this._mo) this._mo.disconnect(); this._mo = motionOn(this.shadowRoot);
     }
   }
